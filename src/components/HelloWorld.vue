@@ -1,29 +1,26 @@
 <template>
   <div class="d-flex">
-    <div class="c-item-1 m-0 justify-content-center d-flex">
+    <div @click="updateMsg" class="c-item-1 m-0 justify-content-center d-flex">
       <h1 class="align-self-center c-vertical m-0 display-1">Answer</h1>
     </div>
-    <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center"><h1 class="align-self-center">Answer</h1></div>
+    <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center"><h1 class="align-self-center">{{statusMsg.message}}</h1></div>
 
   </div>
   <div class="c-topright d-flex">
-    <h6 class="p-3">Fr Robert</h6>
+    <h6 v-show="showUser" class="p-3">{{ currentUser.userName }}</h6>
     <div class="c-item m-0">
       <nav class="navbar bg-light">
         <div class="container-fluid">
 
-          <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+          <button @click="toggleUser" class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="list-group">
-              <li class="list-group-item active">Cras justo odio</li>
-              <li class="list-group-item">Dapibus ac facilisis in</li>
-              <li class="list-group-item">Morbi leo risus</li>
-              <li class="list-group-item">Porta ac consectetur ac</li>
-              <li class="list-group-item">Vestibulum at eros</li>
+           
+              <li v-for="user in users" :key="user.id" :class="{active: user.userName===currentUser.userName, shun}" class="list-group-item" @click="updateUser(user.userName)">{{user.userName}}</li>
             </ul>
 
           </div>
@@ -34,6 +31,26 @@
   </div>
 
 </template>
+<script setup>
+import {ref} from "vue";
+const statusMsg = ref({ message: "Visitor for Robert"});
+const showUser = ref(true);
+const currentUser = ref({userName: 'Fr Robert'})
+const users = ref([{ userName: 'General'},{userName:'Fr Robert'},{userName:'Fr Greg'}, {userName:'Fr Albert'}])
+
+const updateMsg = () => {
+statusMsg.value.message = 'Robert is answering!'
+}
+const updateUser = (newUserName) => {
+  console.log(newUserName);
+  currentUser.value.userName = newUserName
+}
+
+const toggleUser = () => {
+  showUser.value=!showUser.value;
+}
+</script>
+
 
 <script>
 export default {
