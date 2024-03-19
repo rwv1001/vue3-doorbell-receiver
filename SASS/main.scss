@@ -1,0 +1,12 @@
+$font-size-base: 2.5rem ;
+
+$display-font-sizes: (
+  1: 10rem,
+  2: 4.5rem,
+  3: 4rem,
+  4: 3.5rem,
+  5: 3rem,
+  6: 2.5rem
+); 
+// immport bootstrap
+@import '../node_modules/bootstrap/scss/bootstrap'

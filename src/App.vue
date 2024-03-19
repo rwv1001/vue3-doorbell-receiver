@@ -1,14 +1,36 @@
 <template>
-  <HelloWorld msg="Doorbell Setup"/>
+  <NavMenu :currentUser="currentUser" :users="users" @updateUser="updateUser" "/>
+  <AnswerPage v-if="justRang"  />
+  <DisplayTime />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import NavMenu from './components/NavMenu.vue'
+import AnswerPage from './components/Answer.vue'
+import DisplayTime from './components/DisplayTime.vue'
+
+
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    AnswerPage, 
+    NavMenu,
+    DisplayTime
+  },
+  data() {
+    return {
+      justRang: false,
+      currentUser: 'Fr Robert',
+      users: [  'Generalt','Fr Robert','Fr Greg','Fr Albert' ]
+    }
+  },
+  methods: {
+    updateUser(newUserName) {
+      console.log('Update aaaaa' )
+      this.currentUser = newUserName;     
+    }
+
   }
 }
 </script>
