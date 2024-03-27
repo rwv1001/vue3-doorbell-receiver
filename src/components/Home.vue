@@ -1,6 +1,6 @@
 <template>
     <div id="home">
-    <NavMenu  :currentUser="currentUser" :users="users" @updateUser="updateUser" @finish="finish" />  
+    <NavMenu  :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser" @finish="finish" />  
     <AnswerPage v-if="justRang"  />
     <BaseConnection :connected="con"/>
     <DisplayTime />  
@@ -72,14 +72,15 @@
       return {
         justRang: false,
         con: false,
-        currentUser: 'Fr Robert',
-        users: [  'Generalt','Fr Robert','Fr Greg','Fr Albert' ]
+        currentUserId: 1,
+        currentUserName: ''
       }
     },
     methods: {
-      updateUser(newUserName) {
+      updateUser(newUserId, newUserName) {
         console.log('Update aaaaa' )
-        this.currentUser = newUserName;     
+        this.currentUser = newUserId; 
+        this.currentUserName = newUserName    
       },
       finish(interval) {
         console.log("App Finish id: "+interval)

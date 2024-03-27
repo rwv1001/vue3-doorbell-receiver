@@ -1,6 +1,6 @@
 <template>
   <div class="c-topright d-flex">
-    <h6 v-show="showUser" class="p-3">{{ currentUser }}</h6>
+    <h6 v-show="showUser" class="p-3">{{currentUserName}}</h6>
     <div class="c-item m-0">
       <nav class="navbar bg-light">
         <div class="container-fluid">
@@ -13,8 +13,8 @@
           <div v-if="!finished" class="collapse.show navbar-collapse" id="navbarSupportedContent">
             <ul  class="list-group">
 
-              <li v-for="user in this.users" :key="user.id" :class="{ active: user === currentUser }"
-                class="list-group-item" @click="updateUser(user)">{{ user }}</li>
+              <li v-for="user in this.users" :key="user.id" :class="{ active: user.name === currentUserName }"
+                class="list-group-item" @click="updateUser(user.id, user.name)">{{ user.name }}</li>
             </ul>
 
           </div>
@@ -32,11 +32,10 @@ import moment from 'moment';
 
 
 export default {
-  props: ['users', 'currentUser', 'emitter'],
+  props: ['currentUserId', 'currentUserName'],
   name: 'NavMenu',
   mounted() {
-    this.closeTime = (new Date()).getTime();
-      
+    this.closeTime = (new Date()).getTime();  
     
   },
   created() {
@@ -47,6 +46,7 @@ export default {
     return {
       showMenu: false,
       showUser: true,
+      users: [],
       now: new Date(),
       until: new Date(),
       interval: 0
@@ -70,6 +70,7 @@ export default {
   },
   methods: {
     toggleUser() {
+      fetch('http://192.168.1.47:3000/settings').then(res => res.json()).then(data => this.users = data ).catch(err => console.log(err.message))
         clearInterval(this.interval)
         this.interval = setInterval(() => {
           this.now = new Date();
@@ -78,9 +79,9 @@ export default {
       this.until = moment().add(5, 'seconds');
       console.log("Set interval id is "+this.interval)
     },
-    updateUser(newUserName) {
-      console.log(newUserName);
-      this.$emit('updateUser', newUserName);
+    updateUser(newUserId, newUserName) {
+      console.log(newUserId);
+      this.$emit('updateUser', newUserId, newUserName);
     }
 
   }
