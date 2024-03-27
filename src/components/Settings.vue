@@ -9,8 +9,9 @@
       'Response Msg' is the message displayed on all the receivers once someone has registered their intention to
       answer the door.
     </p>
-    <div class="container">
-      <form action="#">
+    <div class="d-flex justify-content-center c-formcontainer" >
+      <div>
+      <form action="#" class="c-wide">
         <div class="input-group mb-3">
           <span class="input-group-text">1</span>
           <span class="input-group-text">Request Msg</span>
@@ -133,6 +134,7 @@
         </div>
       </form>
     </div>
+    </div>
 
 
   </div>
@@ -140,7 +142,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Settings',
   props: {
     msg: String
   }
@@ -165,5 +167,11 @@ li {
 
 a {
   color: #42b983;
+}
+.c-wide {
+  width:95vw
+}
+.c-formcontainer {
+  width:100vw
 }
 </style>
