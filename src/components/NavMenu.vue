@@ -10,8 +10,8 @@
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <div v-show="!finished" class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="list-group">
+          <div v-if="!finished" class="collapse.show navbar-collapse" id="navbarSupportedContent">
+            <ul  class="list-group">
 
               <li v-for="user in this.users" :key="user.id" :class="{ active: user === currentUser }"
                 class="list-group-item" @click="updateUser(user)">{{ user }}</li>
@@ -58,8 +58,10 @@ export default {
     },
     remaining() {
       let remaining = moment.duration(Date.parse(this.until) - this.now);
+      console.log("Called remaining")
       if (remaining <= 0) {
-        this.$emit('finish')
+        this.$emit('finish', this.interval);         
+        console.log("Called remaining in finish state")
        
       }
       return remaining;
@@ -68,19 +70,17 @@ export default {
   },
   methods: {
     toggleUser() {
-      this.interval = setInterval(() => {
-      this.now = new Date();
-    }, 1000);
-    this.until = moment().add(10,'seconds');
-
-
+        clearInterval(this.interval)
+        this.interval = setInterval(() => {
+          this.now = new Date();
+        }, 1000);
+      
+      this.until = moment().add(5, 'seconds');
+      console.log("Set interval id is "+this.interval)
     },
     updateUser(newUserName) {
       console.log(newUserName);
       this.$emit('updateUser', newUserName);
-    },
-    finish() {
-      clearInterval(this.interval);
     }
 
   }
