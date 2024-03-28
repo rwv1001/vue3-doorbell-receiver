@@ -1,115 +1,133 @@
 <template>
-    <div id="home">
-    <NavMenu  :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser" @finish="finish" />  
-    <AnswerPage v-if="justRang"  />
-    <BaseConnection :connected="con"/>
-    <DisplayTime />  
+  <div id="home">
+    <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
+      @finish="finish" />
+    <AnswerPage v-if="justRang" />
+    <BaseConnection :connected="con" />
+    <DisplayTime />
     <router-view />
-    </div>
-  </template>
-  
-  <script>
-  import NavMenu from './homeComponents/NavMenu.vue'
-  import AnswerPage from './homeComponents/Answer.vue'
-  import DisplayTime from './homeComponents/DisplayTime.vue'
-  import BaseConnection from './homeComponents/BaseConnection.vue'
-  import { io } from "socket.io-client";
-  import { ref } from "vue";
-  const socket = io('ws://192.168.1.47:3500')
-  
-   const connected = ref(true);
-  
-  // function sendMessage(e) {
-  //     e.preventDefault()
-  //     const input = document.querySelector('input')
-  //     if (input.value) {
-  //         socket.emit('message', input.value)
-  //         input.value = ""
-  //     }
-  //     input.focus()
-  // }
-  
-  // // document.querySelector('form')
-  // //     .addEventListener('submit', sendMessage)
-  
-  // // Listen for messages 
-  // socket.on("message", (data) => {
-  //     // const li = document.createElement('li')
-  //     // li.textContent = data
-  //     // document.querySelector('ul').appendChild(li)
-  // })
-  
-  
-  
-  
-  
-  
-  export default {
-    name: 'Home',
-    components: {
-      AnswerPage, 
-      NavMenu,
-      DisplayTime,
-      BaseConnection
-    },
-    mounted() {
-      socket.on('connect', () => {
+  </div>
+</template>
+
+<script>
+import NavMenu from './homeComponents/NavMenu.vue'
+import AnswerPage from './homeComponents/Answer.vue'
+import DisplayTime from './homeComponents/DisplayTime.vue'
+import BaseConnection from './homeComponents/BaseConnection.vue'
+import { io } from "socket.io-client";
+import { ref } from "vue";
+import { useCookies } from "vue3-cookies";
+const socket = io('ws://192.168.1.47:3500')
+
+const connected = ref(true);
+
+// function sendMessage(e) {
+//     e.preventDefault()
+//     const input = document.querySelector('input')
+//     if (input.value) {
+//         socket.emit('message', input.value)
+//         input.value = ""
+//     }
+//     input.focus()
+// }
+
+// // document.querySelector('form')
+// //     .addEventListener('submit', sendMessage)
+
+// // Listen for messages 
+// socket.on("message", (data) => {
+//     // const li = document.createElement('li')
+//     // li.textContent = data
+//     // document.querySelector('ul').appendChild(li)
+// })
+
+
+
+
+
+
+export default {
+  name: 'Home',
+  components: {
+    AnswerPage,
+    NavMenu,
+    DisplayTime,
+    BaseConnection
+  },
+  setup() {
+    const { cookies } = useCookies();
+    return { cookies };
+  },
+  mounted() {
+    
+    let my_cookie_user = this.cookies.get("currentUsesr");
+    if(my_cookie_user != null) {
+      this.currentUserName = my_cookie_user.name;
+      this.currentUserId = my_cookie_user.id;
+    }
+    console.log("Cookie user: "+ my_cookie_user);
+    
+
+    socket.on('connect', () => {
       console.log('App.vue connected');
       this.con = true;
       // const li = document.createElement('li')
       // li.textContent = "connected"
       // document.querySelector('ul').appendChild(li)
-  })
-  socket.on('disconnect', () => {    
-    console.log('App.vue disconnected');
+    })
+    socket.on('disconnect', () => {
+      console.log('App.vue disconnected');
       this.con = false;
       // const li = document.createElement('li')
       // li.textContent = "disconnected"
       // document.querySelector('ul').appendChild(li)
-  })
-    },
-    data() {
-      return {
-        justRang: false,
-        con: false,
-        currentUserId: 1,
-        currentUserName: ''
-      }
-    },
-    methods: {
-      updateUser(newUserId, newUserName) {
-        console.log('Update aaaaa' )
-        this.currentUser = newUserId; 
-        this.currentUserName = newUserName    
-      },
-      finish(interval) {
-        console.log("App Finish id: "+interval)
-        clearInterval(interval);
-        
-      }
-  
+    })
+  },
+  data() {
+    return {
+      justRang: false,
+      con: false,
+      currentUserId: 1,
+      currentUserName: ''
     }
+  },
+  methods: {
+    updateUser(newUserId, newUserName) {
+      console.log('Update aaaaa')
+      this.currentUserId = newUserId;
+      this.currentUserName = newUserName
+      var user = { id:this.currentUserId, name:this.currentUserName}; 
+      this.cookies.set("currentUsesr", user, "30d");
+    },
+    finish(interval) {
+      console.log("App Finish id: " + interval)
+      clearInterval(interval);
+
+    }
+
   }
-  </script>
-  
-  <style >
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  
-  }
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #070707;
-    margin-top: 0px;
-  }
-  #home {
-    overflow: hidden; /* Hide scrollbars */
-  }
-  
-  </style>
-  
+}
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #070707;
+  margin-top: 0px;
+}
+
+#home {
+  overflow: hidden;
+  /* Hide scrollbars */
+}
+</style>

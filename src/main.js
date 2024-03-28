@@ -3,6 +3,10 @@ import "/css/main.min.css"
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+// import Vue from 'vue';
+// import VueCookies from 'vue-cookies';
+
+// Vue.use(VueCookies, { expires: '7d'})
 
 createApp(App).use(router).mount('#app')
 console.log("hello world RWV")

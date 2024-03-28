@@ -36,7 +36,7 @@
       "WaitMsg": "Please wait",
       "ReplyMsg": "Fr Greg will be with you shortly",
       "ResponseMsg": "Greg is answering this",
-      "Phone": true,
+      "Phone": false,
       "PhoneNumber": "",
       "id": "4"
     },
