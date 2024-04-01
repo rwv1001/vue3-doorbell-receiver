@@ -50,7 +50,7 @@
             </div>
             <textarea :id="PhoneNumberId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.PhoneNumber}}</textarea>           
 
-            <button type="button" class="btn btn-primary flex-grow-1 c-field" v-on:click="updateSettings(setting.id)">Update</button>
+            <button type="button" class="btn btn-primary flex-grow-1 c-field" v-on:click="updateSettings(setting.id, setting.name, setting.RequestMsg, setting.WaitMsg, setting.ReplyMsg, setting.ResponseMsg)">Update</button>
             </div>
           </form>
         
@@ -63,6 +63,9 @@
 
 <script>
 import axios from 'axios';
+import { io } from "socket.io-client";
+const socket = io('ws://192.168.1.47:3500')
+
 export default {
   name: 'Settings',
   props: {
@@ -90,7 +93,7 @@ export default {
     PhoneNumberId(id) {      
       return "PhoneNumber"+id;
     },        
-    async updateSettings(id) 
+    async updateSettings(id, oldName, oldRequestMsg, oldWaitMsg, oldReplyMsg, oldResponseMsg) 
     {
       let newname = document.getElementById("name"+id).value;
       let newRequestMsg = document.getElementById("RequestMsg"+id).value;
@@ -99,17 +102,29 @@ export default {
       let newResponseMsg = document.getElementById("ResponseMsg"+id).value;
       let newPhone = document.getElementById("Phone"+id).checked;
       let newPhoneNumber = document.getElementById("PhoneNumber"+id).value;
-      
-      const result = await axios.put("http://192.168.1.47:3000/settings/"+id,{
-        name:newname,
-        RequestMsg:newRequestMsg,
-        WaitMsg:newWaitMsg,
-        ReplyMsg:newReplyMsg, 
-        ResponseMsg:newResponseMsg,
-        Phone:newPhone,   
-        PhoneNumber:newPhoneNumber
-      });
-      console.log("id: "+id+", newRequestMsg: "+ newRequestMsg + ", result: " + result.status + " result-text: " + result.statusText )
+
+      const newData = {
+        name: document.getElementById("name"+id).value,
+        RequestMsg: document.getElementById("RequestMsg"+id).value,
+        WaitMsg: document.getElementById("WaitMsg"+id).value,
+        ReplyMsg: document.getElementById("ReplyMsg"+id).value,
+        ResponseMsg: document.getElementById("ResponseMsg"+id).value,
+        Phone: document.getElementById("Phone"+id).checked,
+        PhoneNumber: document.getElementById("PhoneNumber"+id).value        
+      }
+
+      const oldData = {
+        name: oldName,
+        RequestMsg: oldRequestMsg,
+        WaitMsg: oldWaitMsg,
+        ReplyMsg: oldReplyMsg,
+        ResponseMsg: oldResponseMsg
+      }
+      const newJSONData = JSON.stringify(newData);
+      const oldJSONData = JSON.stringify(oldData);
+      console.log('About to call updateSettings: ' + newJSONData);
+      socket.emit("updateSettings", id,  newJSONData, oldJSONData)
+
     }
   },
   data () {
@@ -119,6 +134,23 @@ export default {
   },
   mounted() {
     fetch('http://192.168.1.47:3000/settings').then(res => res.json()).then(data => this.dbSettings = data ).catch(err => console.log(err.message))
+    
+    socket.on('connect', () => {
+      console.log('Setting.vue connected');
+      
+      // const li = document.createElement('li')
+      // li.textContent = "connected"
+      // document.querySelector('ul').appendChild(li)
+    })
+    socket.on('disconnect', () => {
+      console.log('Setting.vue disconnected');
+      
+      // const li = document.createElement('li')
+      // li.textContent = "disconnected"
+      // document.querySelector('ul').appendChild(li)
+    })
+
+
   }
 }
 </script>

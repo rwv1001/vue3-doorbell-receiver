@@ -51,5 +51,8 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "browser":{
+    "child_process": false
+  }
 }
