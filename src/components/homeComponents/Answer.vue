@@ -33,13 +33,7 @@ export default {
   props: ['doormessages'],
   methods: {
     answered() {
-      var audioElement = new Audio("http://192.168.1.47:8080/assets/4-ReplyMsg.mp3");
-      //var audioSource = audioContext.createMediaElementSource(audioElement);
-      //audioSource.connect(audioContext.destination);
-      audioElement.playbackRate=1.5;
-      audioElement.play();
       this.$emit('answered');
-
     }
   }
 }

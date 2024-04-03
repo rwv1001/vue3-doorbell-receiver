@@ -50,6 +50,7 @@ export default {
           if(this.current_message_uuid != message_uuid) {
              this.current_message_uuid = message_uuid;
              this.doormessages = message_list;
+             console.log("user generator is "+user_generator + ", and current UserID is " +  this.currentUserId);
              if(user_generator != this.currentUserId) {
                let url = "http://192.168.1.47:8080/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
