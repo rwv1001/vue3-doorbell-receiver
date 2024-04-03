@@ -17,8 +17,10 @@ import BaseConnection from './homeComponents/BaseConnection.vue'
 import { io } from "socket.io-client";
 import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
-const io_connection = io('ws://192.168.1.47:3500')
+import moment from 'moment';
 
+const io_connection = io('ws://192.168.1.47:3500')
+const HEART_BEAT = 2000;
 const connected = ref(true);
 
 export default {
@@ -35,6 +37,19 @@ export default {
   },
   mounted() {
     let my_cookie_user = this.cookies.get("currentUsesr");
+    if(!this.beatInterval){
+       this.beatInterval = setInterval(()=> {
+          let now = new Date()
+          let timeDiff = moment.duration(Date.parse(this.nextBeat)- now)
+          console.log("beat timeDiff from now =  "+ timeDiff)
+          if(timeDiff < 0){
+            this.con = false 
+          } else {
+            this.con = true;
+          }
+       }, HEART_BEAT)
+    }
+
     if(my_cookie_user != null) {
       this.currentUserName = my_cookie_user.name;
       this.currentUserId = my_cookie_user.id;
@@ -43,7 +58,7 @@ export default {
 
     io_connection.on('connect', (socket) => {
       console.log('App.vue connected');
-      this.con = true;      
+     // this.con = true;      
     })
     io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator) => {
           console.log('received_message list, uuid = ' + message_uuid);
@@ -63,6 +78,9 @@ export default {
    
           }
     })
+    io_connection.on('heart_beat', () => {
+       this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
+    })
     io_connection.on('doorbell_idle', () => {
           console.log('doorbell idle');
           this.doormessages = [];
@@ -80,7 +98,9 @@ export default {
       con: false,
       currentUserId: 1,
       currentUserName: '',
-      soundAlertStatus: false
+      soundAlertStatus: false,
+      nextBeat: new Date(),
+      beatInterval: null
     }
   },
   methods: {
