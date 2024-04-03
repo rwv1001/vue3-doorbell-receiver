@@ -2,9 +2,9 @@
   <div id="home">
     <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
       @finish="finish" />
-    <AnswerPage v-if="justRang" />
-    <BaseConnection :connected="con" />
-    <DisplayTime />
+    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @answered="answered" />
+    <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
+    <DisplayTime v-show="doormessages.length == 0" />
     <router-view />
   </div>
 </template>
@@ -17,34 +17,9 @@ import BaseConnection from './homeComponents/BaseConnection.vue'
 import { io } from "socket.io-client";
 import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
-const socket = io('ws://192.168.1.47:3500')
+const io_connection = io('ws://192.168.1.47:3500')
 
 const connected = ref(true);
-
-// function sendMessage(e) {
-//     e.preventDefault()
-//     const input = document.querySelector('input')
-//     if (input.value) {
-//         socket.emit('message', input.value)
-//         input.value = ""
-//     }
-//     input.focus()
-// }
-
-// // document.querySelector('form')
-// //     .addEventListener('submit', sendMessage)
-
-// // Listen for messages 
-// socket.on("message", (data) => {
-//     // const li = document.createElement('li')
-//     // li.textContent = data
-//     // document.querySelector('ul').appendChild(li)
-// })
-
-
-
-
-
 
 export default {
   name: 'Home',
@@ -59,36 +34,52 @@ export default {
     return { cookies };
   },
   mounted() {
-    
     let my_cookie_user = this.cookies.get("currentUsesr");
     if(my_cookie_user != null) {
       this.currentUserName = my_cookie_user.name;
       this.currentUserId = my_cookie_user.id;
     }
     console.log("Cookie user: "+ my_cookie_user);
-    
 
-    socket.on('connect', () => {
+    io_connection.on('connect', (socket) => {
       console.log('App.vue connected');
-      this.con = true;
-      // const li = document.createElement('li')
-      // li.textContent = "connected"
-      // document.querySelector('ul').appendChild(li)
+      this.con = true;      
     })
-    socket.on('disconnect', () => {
+    io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator) => {
+          console.log('received_message list, uuid = ' + message_uuid);
+          if(this.current_message_uuid != message_uuid) {
+             this.current_message_uuid = message_uuid;
+             this.doormessages = message_list;
+             if(user_generator != this.currentUserId) {
+               let url = "http://192.168.1.47:8080/assets/"+mp3_message_to_browser;
+               console.log("Try to play the mp3: "+ url)
+               if(this.soundAlertStatus) {
+                 var audioElement = new Audio(url);
+                 audioElement.playbackRate=1.5;
+                 audioElement.play();
+               }
+             }
+   
+          }
+    })
+    io_connection.on('doorbell_idle', () => {
+          console.log('doorbell idle');
+          this.doormessages = [];
+    })
+    io_connection.on('disconnect', () => {
       console.log('App.vue disconnected');
       this.con = false;
-      // const li = document.createElement('li')
-      // li.textContent = "disconnected"
-      // document.querySelector('ul').appendChild(li)
     })
   },
   data() {
     return {
       justRang: false,
+      doormessages: [],
+      current_message_uuid: 0,
       con: false,
       currentUserId: 1,
-      currentUserName: ''
+      currentUserName: '',
+      soundAlertStatus: false
     }
   },
   methods: {
@@ -103,6 +94,14 @@ export default {
       console.log("App Finish id: " + interval)
       clearInterval(interval);
 
+    },
+    answered() {
+      console.log("Answered clicked by "+ this.currentUserName);
+      io_connection.emit('answered', this.currentUserId)
+    },
+    toggleSoundAlert() {
+      this.soundAlertStatus = !this.soundAlertStatus;
+      console.log("soundAlertStatus = " + this.soundAlertStatus);
     }
 
   }

@@ -1,47 +1,52 @@
 <template>
     
-    <Icon v-if="connected" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
+    <Icon v-if="connected && answering" icon="ph:wifi-high-bold" class="big-icon c-topleft c-answering" />
+    <Icon v-else-if="!connected && answering" icon="ph:wifi-slash-bold" class="big-icon c-topleft c-answering" />
+    <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
     <Icon v-else icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
+    <div class="c-bottomright1 c-clickable" >
+    <Icon v-if="soundAlert" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable" @click="toggleSoundAlert" />
+    <Icon v-else icon="fluent:speaker-off-20-filled" class="big-icon" @click="toggleSoundAlert" />
+    </div>
+
 
 </template>
   
   <script>
- // import { state } from "@/main";
   import { Icon } from '@iconify/vue';
- // import { ref, watch , computed} from "vue";
- // const connectState = ref(false);
   export default { 
-    props: ['connected'],   
-    // computed: {
-    //   connected() {
-    //     console.log("computed state = "+ state.connected)
-    //     connectState = state.connected;
-    //     return state.connected;
-    //   }
-    // },
+    props: ['connected','answering','soundAlert'],   
     components: {
       Icon,
     },
     name: 'BaseConnection',
     mounted() {
-      // watch(connectState, () => {
-      //   console.log("watch state.connected = " + state.connected)
-      // })
 
     },
     data() {
 
    
     },
+    methods: {
+      toggleSoundAlert() {
+        this.$emit('toggleSoundAlert');
+      }
+    }
 
   }
   </script>
   
   <style>
-  .c-topleft {
+.c-topleft {
   position: absolute;
   top: 0px;
   left: 0px;
+}
+
+.c-bottomright1 {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
 }
 
 svg {
@@ -51,5 +56,12 @@ svg {
 
 .big-icon {
    font-size: 100px;
+}
+.c-clickable:hover {
+  cursor: pointer;
+}
+
+.c-answering {
+   color: white;
 }
   </style>

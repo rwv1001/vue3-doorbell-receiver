@@ -1,23 +1,23 @@
 <template>
   <div class="d-flex">
-    <div @click="updateMsg" class="c-item-1 m-0 justify-content-center d-flex">
-      <h1 class="align-self-center c-vertical m-0 display-1">Answer</h1>
+    <div @click="answered" class="c-item-1 m-0 justify-content-center d-flex c-answer">
+      <h1 class="align-self-center c-vertical m-0 display-1 ">Answer</h1>
     </div>
-    <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center"><h1 class="align-self-center">{{statusMsg.message}}</h1></div>
+    <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center">
+          <div class="d-flex align-items-center">
+            <div class="d-flex flex-column">
+              <div v-for="message in doormessages">
+                  <h1>{{message}}</h1>
+              </div>
+            </div>
+          </div>
+    </div>
 
   </div>
 
 
 </template>
 <script setup>
-import {ref} from "vue";
-const statusMsg = ref({ message: "Visitor for Robert"});
-
-
-
-const updateMsg = () => {
-statusMsg.value.message = 'Robert is answering!'
-}
 
 
 
@@ -25,9 +25,23 @@ statusMsg.value.message = 'Robert is answering!'
 
 
 <script>
+var audioContext = new AudioContext();
+var audioBuffer;
+
 export default {
   name: 'AnswerPage',
+  props: ['doormessages'],
+  methods: {
+    answered() {
+      var audioElement = new Audio("http://192.168.1.47:8080/assets/4-ReplyMsg.mp3");
+      //var audioSource = audioContext.createMediaElementSource(audioElement);
+      //audioSource.connect(audioContext.destination);
+      audioElement.playbackRate=1.5;
+      audioElement.play();
+      this.$emit('answered');
 
+    }
+  }
 }
 </script>
 
@@ -51,6 +65,9 @@ a {
   color: #42b983;
 }
 
+.c-answer:hover{
+  cursor: pointer;
+}
 
 .c-item-1{
   height: 100vh;
