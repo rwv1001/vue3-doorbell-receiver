@@ -4,7 +4,7 @@
       @finish="finish" />
     <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @answered="answered" />
     <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
-    <DisplayTime v-show="doormessages.length == 0" />
+    <DisplayTime v-if="doormessages.length == 0" />
     <router-view />
   </div>
 </template>

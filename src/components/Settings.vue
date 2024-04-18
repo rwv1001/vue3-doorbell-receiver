@@ -50,7 +50,7 @@
             </div>
             <textarea :id="PhoneNumberId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.PhoneNumber}}</textarea>           
 
-            <button type="button" class="btn btn-primary flex-grow-1 c-field" v-on:click="updateSettings(setting.id, setting.name, setting.RequestMsg, setting.WaitMsg, setting.ReplyMsg, setting.ResponseMsg)">Update</button>
+            <button type="button" class="btn btn-primary flex-grow-1 c-field" v-on:click="updateSettings(setting.id)">Update</button>
             </div>
           </form>
         
@@ -93,38 +93,33 @@ export default {
     PhoneNumberId(id) {      
       return "PhoneNumber"+id;
     },        
-    async updateSettings(id, oldName, oldRequestMsg, oldWaitMsg, oldReplyMsg, oldResponseMsg) 
+    async updateSettings(id) 
     {
-      let newname = document.getElementById("name"+id).value;
-      let newRequestMsg = document.getElementById("RequestMsg"+id).value;
-      let newWaitMsg = document.getElementById("WaitMsg"+id).value;
-      let newReplyMsg = document.getElementById("ReplyMsg"+id).value;
-      let newResponseMsg = document.getElementById("ResponseMsg"+id).value;
-      let newPhone = document.getElementById("Phone"+id).checked;
-      let newPhoneNumber = document.getElementById("PhoneNumber"+id).value;
+      fetch('http://192.168.1.47:3000/settings/'+id).then(res => res.json()).then(
+         data => {
+           this.dbSettings = data 
+           const newData = {
+             name: document.getElementById("name"+id).value,
+             RequestMsg: document.getElementById("RequestMsg"+id).value,
+             WaitMsg: document.getElementById("WaitMsg"+id).value,
+             ReplyMsg: document.getElementById("ReplyMsg"+id).value,
+             ResponseMsg: document.getElementById("ResponseMsg"+id).value,
+             Phone: document.getElementById("Phone"+id).checked,
+             PhoneNumber: document.getElementById("PhoneNumber"+id).value        
+           }
 
-      const newData = {
-        name: document.getElementById("name"+id).value,
-        RequestMsg: document.getElementById("RequestMsg"+id).value,
-        WaitMsg: document.getElementById("WaitMsg"+id).value,
-        ReplyMsg: document.getElementById("ReplyMsg"+id).value,
-        ResponseMsg: document.getElementById("ResponseMsg"+id).value,
-        Phone: document.getElementById("Phone"+id).checked,
-        PhoneNumber: document.getElementById("PhoneNumber"+id).value        
-      }
-
-      const oldData = {
-        name: oldName,
-        RequestMsg: oldRequestMsg,
-        WaitMsg: oldWaitMsg,
-        ReplyMsg: oldReplyMsg,
-        ResponseMsg: oldResponseMsg
-      }
-      const newJSONData = JSON.stringify(newData);
-      const oldJSONData = JSON.stringify(oldData);
-      console.log('About to call updateSettings: ' + newJSONData);
-      socket.emit("updateSettings", id,  newJSONData, oldJSONData)
-
+           const oldData = {
+             name: data.name,
+             RequestMsg: data.RequestMsg,
+             WaitMsg: data.WaitMsg,
+             ReplyMsg: data.ReplyMsg,
+             ResponseMsg: data.ResponseMsg
+           }
+           const newJSONData = JSON.stringify(newData);
+           const oldJSONData = JSON.stringify(oldData);
+           console.log('About to call updateSettings: ' + newJSONData);
+           socket.emit("updateSettings", id,  newJSONData, oldJSONData)
+      }).catch(err => console.log(err.message)) 
     }
   },
   data () {
