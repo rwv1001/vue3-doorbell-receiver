@@ -18,8 +18,8 @@
         <div class="p-2 flex-grow-1 bd-highlight c-label">Wait Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Reply Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Response Msg</div>
-        <div class="p-2 flex-grow-1 bd-highlight c-label">Phone</div>
-        <div class="p-2 flex-grow-1 bd-highlight c-label">Phone No.</div>
+        <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone</div>
+        <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone No.</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label"></div>
       </div>
     </div>
@@ -41,7 +41,7 @@
             <textarea :id="ReplyMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.ReplyMsg}}</textarea>
 
             <textarea :id="ResponseMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.ResponseMsg}}</textarea>
-
+            <div style="display: none;"> 
             <div  v-if="setting.Phone"  class="flex-grow-1 c-field c-check" > 
             <input  class="form-check-input flex-grow-1 c-field" checked type="checkbox" value="" :id="PhoneId(setting.id)">            
             </div>
@@ -49,7 +49,7 @@
             <input  class="form-check-input flex-grow-1 c-field" type="checkbox" value="" :id="PhoneId(setting.id)">            
             </div>
             <textarea :id="PhoneNumberId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.PhoneNumber}}</textarea>           
-
+            </div>
             <button type="button" class="btn btn-primary flex-grow-1 c-field" v-on:click="updateSettings(setting.id)">Update</button>
             </div>
           </form>
@@ -64,7 +64,7 @@
 <script>
 import axios from 'axios';
 import { io } from "socket.io-client";
-const socket = io('ws://192.168.1.47:3500')
+const socket = io("https://socket.cambdoorbell.duckdns.org");
 
 export default {
   name: 'Settings',
@@ -95,9 +95,9 @@ export default {
     },        
     async updateSettings(id) 
     {
-      fetch('http://192.168.1.47:3000/settings/'+id).then(res => res.json()).then(
+      fetch('https://json.cambdoorbell.duckdns.org/settings/'+id).then(res => res.json()).then(
          data => {
-           this.dbSettings = data 
+          
            const newData = {
              name: document.getElementById("name"+id).value,
              RequestMsg: document.getElementById("RequestMsg"+id).value,
@@ -119,7 +119,15 @@ export default {
            const oldJSONData = JSON.stringify(oldData);
            console.log('About to call updateSettings: ' + newJSONData);
            socket.emit("updateSettings", id,  newJSONData, oldJSONData)
-      }).catch(err => console.log(err.message)) 
+      }).catch(err => console.log(err.message))
+      this.dbSettings.name =  document.getElementById("name"+id).value;
+      this.dbSettings.RequestMsg =  document.getElementById("RequestMsg"+id).value; 
+      this.dbSettings.WaitMsg =  document.getElementById("WaitMsg"+id).value;
+      this.dbSettings.ReplyMsg =  document.getElementById("ReplyMsg"+id).value;
+      this.dbSettings.ResponseMsg =  document.getElementById("ResponseMsg"+id).value;
+      this.dbSettings.Phone =  document.getElementById("Phone"+id).value;
+      this.dbSettings.PhoneNumber =  document.getElementById("PhoneNumber"+id).value;
+ 
     }
   },
   data () {
@@ -128,7 +136,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://192.168.1.47:3000/settings').then(res => res.json()).then(data => this.dbSettings = data ).catch(err => console.log(err.message))
+    fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data => this.dbSettings = data ).catch(err => console.log(err.message))
     
     socket.on('connect', () => {
       console.log('Setting.vue connected');

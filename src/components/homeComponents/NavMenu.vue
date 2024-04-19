@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     toggleUser() {
-      fetch('http://192.168.1.47:3000/settings').then(res => res.json()).then(data => this.users = data ).catch(err => console.log(err.message))
+      fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data => this.users = data ).catch(err => console.log(err.message))
         clearInterval(this.interval)
         this.interval = setInterval(() => {
           this.now = new Date();

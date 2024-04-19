@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve1": "vue-cli-service serve --host cambdoorbell.duckdns.org",
+    "serve2": "vue-cli-service serve --host test.cambdoorbell.duckdns.org",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -14,6 +16,7 @@
     "bootstrap": "^5.3.3",
     "core-js": "^3.8.3",
     "express": "^4.19.1",
+    "fs": "^0.0.1-security",
     "json-server": "^1.0.0-alpha.23",
     "mitt": "^3.0.1",
     "moment": "^2.30.1",
@@ -52,7 +55,7 @@
     "not dead",
     "not ie 11"
   ],
-  "browser":{
+  "browser": {
     "child_process": false
   }
 }

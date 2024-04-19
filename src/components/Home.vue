@@ -19,7 +19,20 @@ import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
 import moment from 'moment';
 
-const io_connection = io('ws://192.168.1.47:3500')
+//const io_connection = io('https://socket.cambdoorbell.duckdns.org',{
+//  cert: process.env.VUE_APP_SSL_CERT,
+//  key: process.env.VUE_APP_SSL_KEY,
+//  path: '/socket',
+//  reconnection: true,
+//  transport: ['websocket', 'polling'],
+//  reconnectionAttempts: 5,
+//})
+
+//const io_connection = io('https://socket.cambdoorbell.duckdns.org')
+
+const io_connection = io("https://socket.cambdoorbell.duckdns.org");
+
+
 const HEART_BEAT = 2000;
 const connected = ref(true);
 
@@ -36,6 +49,10 @@ export default {
     return { cookies };
   },
   mounted() {
+    console.log('Home.vue has mounted - process.env:')
+    console.log(process.env.VUE_APP_SSL_KEY)
+    console.log(process.env.VUE_APP_SSL_CERT)
+    console.log(process.env.VUE_APP_ROOT_URL)
     let my_cookie_user = this.cookies.get("currentUsesr");
     if(!this.beatInterval){
        this.beatInterval = setInterval(()=> {
@@ -67,7 +84,7 @@ export default {
              this.doormessages = message_list;
              console.log("user generator is "+user_generator + ", and current UserID is " +  this.currentUserId);
              if(user_generator != this.currentUserId) {
-               let url = "http://192.168.1.47:8080/assets/"+mp3_message_to_browser;
+               let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
                if(this.soundAlertStatus) {
                  var audioElement = new Audio(url);
