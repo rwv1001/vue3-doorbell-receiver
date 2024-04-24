@@ -1,7 +1,22 @@
 <template>
   <div class="d-flex">
-    <div @click="answered" class="c-item-1 m-0 justify-content-center d-flex c-answer">
-      <h1 class="align-self-center c-vertical m-0 display-1 ">Answer</h1>
+    <div v-if="answering" class="c-item-1 m-0 justify-content-center  d-flex bg-warning">
+      <h1 class="align-self-center c-vertical text-dark m-0 display-4 ">Go to door!</h1>
+    </div>
+    <div v-else  @click="answered" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-dark">
+      <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Answer</h1>
+    </div>
+
+    
+    <div v-if="intercomClientId == 0"  @click="startIntercom" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-success">
+      <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Start Intercom</h1>
+    </div>
+
+    <div v-else-if="intercomClientId == clientId" @click="hangUp" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-danger">
+      <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Hang Up</h1>
+    </div>
+    <div v-else class="c-item-1 m-0 justify-content-center d-flex bg-secondary">
+      <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Intercom in Use</h1>
     </div>
     <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center">
           <div class="d-flex align-items-center">
@@ -12,7 +27,6 @@
             </div>
           </div>
     </div>
-
   </div>
 
 
@@ -30,10 +44,27 @@ var audioBuffer;
 
 export default {
   name: 'AnswerPage',
-  props: ['doormessages'],
+  props: ['doormessages', 'clientId', 'intercomClientId'],
   methods: {
     answered() {
       this.$emit('answered');
+      this.answering = true;
+    },
+    startIntercom() {
+      if(this.clientId != this.intercomClientId){
+        this.$emit('startIntercom', this.clientId)
+        console.log("one possibility");
+      } else {
+        console.log("Someone is already using the intercom")
+      }
+    },
+    hangUp() {
+       this.$emit('hangUp')
+    }
+  },
+  data() {
+    return {
+      answering: false
     }
   }
 }
@@ -67,8 +98,18 @@ a {
   height: 100vh;
   width:190px;
   border: 1px solid #333;
+}
+.c-item-answer-background {
   background-color:rgb(0, 0, 0);
 }
+
+.c-item-answering-background {
+  background-color:rgb(0, 0, 0);
+}
+
+.c-item-intercom
+
+
 .c-item-2{
   height: 100vh;
   width:140px;
@@ -78,7 +119,6 @@ a {
 
 .c-vertical {
   font-weight: bold;
-  color: white;
   transform: rotate(270deg);  
 } 
 

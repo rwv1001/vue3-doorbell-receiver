@@ -2,7 +2,7 @@
   <div id="home">
     <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
       @finish="finish" />
-    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @answered="answered" />
+    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :clientId="clientId" :intercomClientId="intercomClientId"/>
     <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
     <DisplayTime v-if="doormessages.length == 0" />
     <router-view />
@@ -18,7 +18,7 @@ import { io } from "socket.io-client";
 import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
 import moment from 'moment';
-
+import { uuid } from 'vue-uuid'
 //const io_connection = io('https://socket.cambdoorbell.duckdns.org',{
 //  cert: process.env.VUE_APP_SSL_CERT,
 //  key: process.env.VUE_APP_SSL_KEY,
@@ -72,13 +72,18 @@ export default {
       this.currentUserId = my_cookie_user.id;
     }
     console.log("Cookie user: "+ my_cookie_user);
-
+    this.clientId = uuid.v4();  
     io_connection.on('connect', (socket) => {
       console.log('App.vue connected');
      // this.con = true;      
     })
-    io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator) => {
+    io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
           console.log('received_message list, uuid = ' + message_uuid);
+          if(this.intercomClientId != newIntercomClientId) {
+             this.intercomClientId = newIntercomClientId;
+             console.log('client id is: '+ this.clientId)
+             console.log('intercom client id is: '+ this.intercomClientId)
+          }
           if(this.current_message_uuid != message_uuid) {
              this.current_message_uuid = message_uuid;
              this.doormessages = message_list;
@@ -117,7 +122,9 @@ export default {
       currentUserName: '',
       soundAlertStatus: false,
       nextBeat: new Date(),
-      beatInterval: null
+      beatInterval: null,
+      clientId: -1,
+      intercomClientId: 0
     }
   },
   methods: {
@@ -135,8 +142,21 @@ export default {
     },
     answered() {
       console.log("Answered clicked by "+ this.currentUserName);
-      io_connection.emit('answered', this.currentUserId)
+      io_connection.emit('answered', this.currentUserId) 
+      if (navigator.mediaDevices.getUserMedia) {
+           console.log("The mediaDevices.getUserMedia() method is supported.");
+      }
+
     },
+    startIntercom(clientId) {
+     //this.intercomClientId = clientId;
+     console.log("startIntercom called with clientId: "+ clientId)
+     io_connection.emit('updateIntercomClientId',clientId, this.currentUserId ); 
+    },
+    hangUp() {
+     io_connection.emit('updateIntercomClientId',0);
+    },
+    
     toggleSoundAlert() {
       this.soundAlertStatus = !this.soundAlertStatus;
       console.log("soundAlertStatus = " + this.soundAlertStatus);

@@ -12,9 +12,11 @@
           </button>
           <div v-if="!finished" class="collapse.show navbar-collapse" id="navbarSupportedContent">
             <ul  class="list-group">
-
-              <li v-for="user in this.users" :key="user.id" :class="{ active: user.name === currentUserName }"
+              <div  v-for="user in this.users" :key="user.id">  
+              <li  v-if="user.name.length>0"  :class="{ active: user.name === currentUserName }"
                 class="list-group-item" @click="updateUser(user.id, user.name)">{{ user.name }}</li>
+
+              </div>    
             </ul>
 
           </div>

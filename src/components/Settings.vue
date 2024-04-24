@@ -8,7 +8,7 @@
       is pressed. The 'Wait Msg' is the message played to the visitor once the button is pressed. The 'Reply Msg' is the
       message played to the visitor once someone has registered their intention to answer the door. The
       'Response Msg' is the message displayed on all the receivers once someone has registered their intention to
-      answer the door.
+      answer the door. The 'Intercom Msg' is the message displayed on the receivers when someone has started an intercom sesstion.
     </p>
     <div class="d-flex justify-content-center c-formcontainer">
       <div class="d-flex justify-content-center c-wide">
@@ -18,6 +18,8 @@
         <div class="p-2 flex-grow-1 bd-highlight c-label">Wait Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Reply Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Response Msg</div>
+        <div class="p-2 flex-grow-1 bd-highlight c-label">Intercom Msg</div>
+
         <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone</div>
         <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone No.</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label"></div>
@@ -41,6 +43,9 @@
             <textarea :id="ReplyMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.ReplyMsg}}</textarea>
 
             <textarea :id="ResponseMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.ResponseMsg}}</textarea>
+
+            <textarea :id="IntercomMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.IntercomMsg}}</textarea>
+
             <div style="display: none;"> 
             <div  v-if="setting.Phone"  class="flex-grow-1 c-field c-check" > 
             <input  class="form-check-input flex-grow-1 c-field" checked type="checkbox" value="" :id="PhoneId(setting.id)">            
@@ -87,6 +92,9 @@ export default {
     ResponseMsgId(id) {      
       return "ResponseMsg"+id;
     },
+    IntercomMsgId(id) {
+      return "IntercomMsg"+id;
+    },
     PhoneId(id) {      
       return "Phone"+id;
     },     
@@ -104,6 +112,7 @@ export default {
              WaitMsg: document.getElementById("WaitMsg"+id).value,
              ReplyMsg: document.getElementById("ReplyMsg"+id).value,
              ResponseMsg: document.getElementById("ResponseMsg"+id).value,
+             IntercomMsg: document.getElementById("IntercomMsg"+id).value,
              Phone: document.getElementById("Phone"+id).checked,
              PhoneNumber: document.getElementById("PhoneNumber"+id).value        
            }
@@ -113,7 +122,8 @@ export default {
              RequestMsg: data.RequestMsg,
              WaitMsg: data.WaitMsg,
              ReplyMsg: data.ReplyMsg,
-             ResponseMsg: data.ResponseMsg
+             ResponseMsg: data.ResponseMsg,
+             IntercomMsg: data.IntercomMsg
            }
            const newJSONData = JSON.stringify(newData);
            const oldJSONData = JSON.stringify(oldData);
@@ -125,6 +135,7 @@ export default {
       this.dbSettings.WaitMsg =  document.getElementById("WaitMsg"+id).value;
       this.dbSettings.ReplyMsg =  document.getElementById("ReplyMsg"+id).value;
       this.dbSettings.ResponseMsg =  document.getElementById("ResponseMsg"+id).value;
+      this.dbSettings.IntercomMsg =  document.getElementById("IntercomMsg"+id).value;
       this.dbSettings.Phone =  document.getElementById("Phone"+id).value;
       this.dbSettings.PhoneNumber =  document.getElementById("PhoneNumber"+id).value;
  
