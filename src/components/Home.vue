@@ -154,7 +154,7 @@ export default {
      io_connection.emit('updateIntercomClientId',clientId, this.currentUserId ); 
     },
     hangUp() {
-     io_connection.emit('updateIntercomClientId',0);
+     io_connection.emit('updateIntercomClientId',0, this.currentUserId);
     },
     
     toggleSoundAlert() {
