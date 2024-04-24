@@ -2,11 +2,16 @@
   <div id="home">
     <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
       @finish="finish" />
-    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :clientId="clientId" :intercomClientId="intercomClientId"/>
+    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :clientId="clientId" :intercomClientId="intercomClientId" :intercomPossible="intercomPossible"/>
     <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
     <DisplayTime v-if="doormessages.length == 0" />
     <router-view />
+
   </div>
+
+    <div v-if="showError" @click="dismissError"  class="c-error" id="errorDiv">
+        {{errorMsg}}
+    </div>
 </template>
 
 <script>
@@ -49,6 +54,7 @@ export default {
     return { cookies };
   },
   mounted() {
+    
     console.log('Home.vue has mounted - process.env:')
     console.log(process.env.VUE_APP_SSL_KEY)
     console.log(process.env.VUE_APP_SSL_CERT)
@@ -111,6 +117,27 @@ export default {
       console.log('App.vue disconnected');
       this.con = false;
     })
+    if (navigator.mediaDevices.getUserMedia) {
+       this.intercomPossible = true;
+       console.log("The mediaDevices.getUserMedia() method is supported.");
+       this.displayError("The mediaDevices.getUserMedia() method is supported.");
+       const constraints = { audio: true };
+       let chunks = [];
+       let onSuccess = function (stream) {
+         const mediaRecorder = new MediaRecorder(stream);
+         //this.mediaRecorder.ondataavailable = function (e) {
+         //  console.log("We have data! "+e);
+         //};  
+       }
+       let onError = function (err) {
+         console.log("The following error occured: " + err);
+       };
+       navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
+    } else {
+       this.intercomPossible = false;
+       console.log("The mediaDevices.getUserMedia() method is NOT supported.");
+       this.displayError("The mediaDevices.getUserMedia() method is NOT supported.");
+    }
   },
   data() {
     return {
@@ -124,7 +151,10 @@ export default {
       nextBeat: new Date(),
       beatInterval: null,
       clientId: -1,
-      intercomClientId: 0
+      intercomClientId: 0,
+      errorMsg: '',
+      showError: false,
+      intercomPossible: false,
     }
   },
   methods: {
@@ -135,6 +165,9 @@ export default {
       var user = { id:this.currentUserId, name:this.currentUserName}; 
       this.cookies.set("currentUsesr", user, "30d");
     },
+    dismissError() {
+      this.showError = false;
+    },
     finish(interval) {
       console.log("App Finish id: " + interval)
       clearInterval(interval);
@@ -143,15 +176,18 @@ export default {
     answered() {
       console.log("Answered clicked by "+ this.currentUserName);
       io_connection.emit('answered', this.currentUserId) 
-      if (navigator.mediaDevices.getUserMedia) {
-           console.log("The mediaDevices.getUserMedia() method is supported.");
-      }
 
     },
+    displayError(errorMsg) {
+      this.showError = true;
+      this.errorMsg = errorMsg;
+    },
+
     startIntercom(clientId) {
-     //this.intercomClientId = clientId;
-     console.log("startIntercom called with clientId: "+ clientId)
-     io_connection.emit('updateIntercomClientId',clientId, this.currentUserId ); 
+
+      console.log("startIntercom called with clientId: "+ clientId)
+      io_connection.emit('updateIntercomClientId',clientId, this.currentUserId );
+ 
     },
     hangUp() {
      io_connection.emit('updateIntercomClientId',0, this.currentUserId);
@@ -187,4 +223,22 @@ export default {
   overflow: hidden;
   /* Hide scrollbars */
 }
+.c-error {
+    background-color: #ffcccc; /* Light red color for the centered div */
+    width: 50%; /* One-fifth of the viewport width */
+    height: 50vh; /* One-fifth of the viewport height */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: flex;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; /* Vertically center the content */
+
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
 </style>

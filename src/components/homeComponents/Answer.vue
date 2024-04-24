@@ -7,7 +7,7 @@
       <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Answer</h1>
     </div>
 
-    
+    <div v-if="intercomPossible">
     <div v-if="intercomClientId == 0"  @click="startIntercom" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-success">
       <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Start Intercom</h1>
     </div>
@@ -17,6 +17,7 @@
     </div>
     <div v-else class="c-item-1 m-0 justify-content-center d-flex bg-secondary">
       <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Intercom in Use</h1>
+    </div>
     </div>
     <div class="c-item-2 m-0 flex-grow-1 d-flex justify-content-center">
           <div class="d-flex align-items-center">
@@ -44,7 +45,7 @@ var audioBuffer;
 
 export default {
   name: 'AnswerPage',
-  props: ['doormessages', 'clientId', 'intercomClientId'],
+  props: ['doormessages', 'clientId', 'intercomClientId', "intercomPossible"],
   methods: {
     answered() {
       this.$emit('answered');
