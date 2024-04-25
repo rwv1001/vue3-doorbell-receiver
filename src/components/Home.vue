@@ -40,6 +40,9 @@ const io_connection = io("https://socket.cambdoorbell.duckdns.org");
 
 const HEART_BEAT = 2000;
 const connected = ref(true);
+const TIME_SLICE = 200;
+var startIntercomHandler;
+var hangUpHandler;
 
 export default {
   name: 'Home',
@@ -85,6 +88,8 @@ export default {
     })
     io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
           console.log('received_message list, uuid = ' + message_uuid);
+          console.log('current_message_uuid = ' + this.current_message_uuid);
+          console.log('mp3_message_to_browser = ' + mp3_message_to_browser);
           if(this.intercomClientId != newIntercomClientId) {
              this.intercomClientId = newIntercomClientId;
              console.log('client id is: '+ this.clientId)
@@ -97,7 +102,7 @@ export default {
              if(user_generator != this.currentUserId) {
                let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
-               if(this.soundAlertStatus) {
+               if(this.soundAlertStatus && mp3_message_to_browser.length > 0) {
                  var audioElement = new Audio(url);
                  audioElement.playbackRate=1.5;
                  audioElement.play();
@@ -112,6 +117,10 @@ export default {
     io_connection.on('doorbell_idle', () => {
           console.log('doorbell idle');
           this.doormessages = [];
+          if(this.intercomRecording) {
+             this.intercomRecording = false;
+             hangUpHandler();
+          }
     })
     io_connection.on('disconnect', () => {
       console.log('App.vue disconnected');
@@ -120,11 +129,23 @@ export default {
     if (navigator.mediaDevices.getUserMedia) {
        this.intercomPossible = true;
        console.log("The mediaDevices.getUserMedia() method is supported.");
-       this.displayError("The mediaDevices.getUserMedia() method is supported.");
+      // this.displayError("The mediaDevices.getUserMedia() method is supported.");
        const constraints = { audio: true };
        let chunks = [];
        let onSuccess = function (stream) {
          const mediaRecorder = new MediaRecorder(stream);
+         startIntercomHandler = function () {
+           mediaRecorder.start(TIME_SLICE);
+           console.log("Recorder started.");
+         }
+         hangUpHandler = function () {
+           mediaRecorder.stop();
+           console.log("Recorder stopped.");  
+         }
+         mediaRecorder.ondataavailable = function (e) {
+           console.log("MediaRecorder has data: "+ e);
+         }
+
          //this.mediaRecorder.ondataavailable = function (e) {
          //  console.log("We have data! "+e);
          //};  
@@ -135,7 +156,7 @@ export default {
        navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
     } else {
        this.intercomPossible = false;
-       console.log("The mediaDevices.getUserMedia() method is NOT supported.");
+       //console.log("The mediaDevices.getUserMedia() method is NOT supported.");
        this.displayError("The mediaDevices.getUserMedia() method is NOT supported.");
     }
   },
@@ -155,6 +176,7 @@ export default {
       errorMsg: '',
       showError: false,
       intercomPossible: false,
+      intercomRecording: false
     }
   },
   methods: {
@@ -187,10 +209,18 @@ export default {
 
       console.log("startIntercom called with clientId: "+ clientId)
       io_connection.emit('updateIntercomClientId',clientId, this.currentUserId );
- 
+      if(!this.intercomRecording) {
+         startIntercomHandler();
+      }
+
+      this.intercomRecording = true;
     },
     hangUp() {
      io_connection.emit('updateIntercomClientId',0, this.currentUserId);
+     if(this.intercomRecording) {
+       hangUpHandler();
+     }
+     this.intercomRecording  = false;
     },
     
     toggleSoundAlert() {
