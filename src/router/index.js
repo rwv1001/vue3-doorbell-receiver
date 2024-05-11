@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../components/Home.vue'
 import Settings from '../components/Settings.vue'
-
+import Intercom from '../components/Intercom.vue'
 const routes = [
     {
         path: '/',
@@ -12,7 +12,14 @@ const routes = [
         path: '/settings',
         name: 'Settings',
         component: Settings
-    }
+    },
+    {
+        path: '/intercom',
+        name: 'Intercom',
+        component: Intercom
+    },
+
+
 ]
 
 const router = createRouter({

@@ -5,8 +5,8 @@
     <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
     <Icon v-else icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
     <div class="c-bottomright1 c-clickable" >
-    <Icon v-if="soundAlert" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable" @click="toggleSoundAlert" />
-    <Icon v-else icon="fluent:speaker-off-20-filled" class="big-icon" @click="toggleSoundAlert" />
+    <Icon v-if="soundAlert" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable" @click="toggleSoundAlertHandler" />
+    <Icon v-else icon="fluent:speaker-off-20-filled" class="big-icon" @click="toggleSoundAlertHandler" />
     </div>
 
 
@@ -15,7 +15,8 @@
   <script>
   import { Icon } from '@iconify/vue';
   export default { 
-    props: ['connected','answering','soundAlert'],   
+    props: ['connected','answering','soundAlert'], 
+    emits: ["toggleSoundAlert"],  
     components: {
       Icon,
     },
@@ -24,11 +25,12 @@
 
     },
     data() {
-
+      return {  
+      }
    
     },
     methods: {
-      toggleSoundAlert() {
+      toggleSoundAlertHandler() {
         this.$emit('toggleSoundAlert');
       }
     }

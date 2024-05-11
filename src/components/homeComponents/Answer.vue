@@ -40,8 +40,6 @@
 
 
 <script>
-var audioContext = new AudioContext();
-var audioBuffer;
 
 export default {
   name: 'AnswerPage',

@@ -2,6 +2,18 @@
   <router-view/>
 </template>
 
+
+
+<script>
+export default {
+  data() {
+    return {
+      name: 'Success'
+    };
+  }
+}
+</script>
+
 <style >
 * {
   margin: 0;

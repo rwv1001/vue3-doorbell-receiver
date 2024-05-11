@@ -24,6 +24,7 @@ import { ref } from "vue";
 import { useCookies } from "vue3-cookies";
 import moment from 'moment';
 import { uuid } from 'vue-uuid'
+import {useDateFormat, useNow} from "@vueuse/core";
 //const io_connection = io('https://socket.cambdoorbell.duckdns.org',{
 //  cert: process.env.VUE_APP_SSL_CERT,
 //  key: process.env.VUE_APP_SSL_KEY,
@@ -33,15 +34,15 @@ import { uuid } from 'vue-uuid'
 //  reconnectionAttempts: 5,
 //})
 
-//const io_connection = io('https://socket.cambdoorbell.duckdns.org')
+const io_connection = io('https://socket.cambdoorbell.duckdns.org')
 
-const io_connection = io("https://socket.cambdoorbell.duckdns.org");
-
+//const io_connection = io("https://socket.cambdoorbell.duckdns.org");
 
 const HEART_BEAT = 2000;
 const connected = ref(true);
-const TIME_SLICE = 200;
+const TIME_SLICE = 5000;
 var startIntercomHandler;
+var sendClientAudioData;
 var hangUpHandler;
 
 export default {
@@ -59,15 +60,15 @@ export default {
   mounted() {
     
     console.log('Home.vue has mounted - process.env:')
-    console.log(process.env.VUE_APP_SSL_KEY)
-    console.log(process.env.VUE_APP_SSL_CERT)
-    console.log(process.env.VUE_APP_ROOT_URL)
+   // console.log(process.env.VUE_APP_SSL_KEY)
+   // console.log(process.env.VUE_APP_SSL_CERT)
+   // console.log(process.env.VUE_APP_ROOT_URL)
     let my_cookie_user = this.cookies.get("currentUsesr");
     if(!this.beatInterval){
        this.beatInterval = setInterval(()=> {
           let now = new Date()
           let timeDiff = moment.duration(Date.parse(this.nextBeat)- now)
-          console.log("beat timeDiff from now =  "+ timeDiff)
+          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff)
           if(timeDiff < 0){
             this.con = false 
           } else {
@@ -84,35 +85,53 @@ export default {
     this.clientId = uuid.v4();  
     io_connection.on('connect', (socket) => {
       console.log('App.vue connected');
+     
      // this.con = true;      
     })
-    io_connection.on('message_list', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
-          console.log('received_message list, uuid = ' + message_uuid);
-          console.log('current_message_uuid = ' + this.current_message_uuid);
-          console.log('mp3_message_to_browser = ' + mp3_message_to_browser);
+    io_connection.on('messageListMsg', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
+          this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
+          
           if(this.intercomClientId != newIntercomClientId) {
              this.intercomClientId = newIntercomClientId;
              console.log('client id is: '+ this.clientId)
              console.log('intercom client id is: '+ this.intercomClientId)
           }
           if(this.current_message_uuid != message_uuid) {
+             console.log('received_message list, uuid = ' + message_uuid);
+             console.log('current_message_uuid = ' + this.current_message_uuid);
+             console.log('mp3_message_to_browser = ' + mp3_message_to_browser);
              this.current_message_uuid = message_uuid;
              this.doormessages = message_list;
+             this.mp3Played = false;
+             if ( message_uuid == 0) {
+                if(this.intercomRecording) {
+                   this.intercomRecording = false;
+                   hangUpHandler();
+                }
+             } 
              console.log("user generator is "+user_generator + ", and current UserID is " +  this.currentUserId);
-             if(user_generator != this.currentUserId) {
+             if(user_generator != this.currentUserId && message_uuid!=0) {
                let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
-               if(this.soundAlertStatus && mp3_message_to_browser.length > 0) {
+               if(this.soundAlertStatus && mp3_message_to_browser.length > 0 && this.mp3Played == false) {
                  var audioElement = new Audio(url);
                  audioElement.playbackRate=1.5;
                  audioElement.play();
+                 this.mp3Played = true
+               } else {
+                 if(this.mp3Played == false) {
+                      console.log("unable to play " + mp3_message_to_browser +". this.soundAlertStatus = " + this.soundAlertStatus);
+                 } else {
+                   console.log("File " + mp3_message_to_browser + " has already been played");
+                 }
+                  
                }
              }
    
           }
     })
     io_connection.on('heart_beat', () => {
-       this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
+//       this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
     })
     io_connection.on('doorbell_idle', () => {
           console.log('doorbell idle');
@@ -133,7 +152,8 @@ export default {
        const constraints = { audio: true };
        let chunks = [];
        let onSuccess = function (stream) {
-         const mediaRecorder = new MediaRecorder(stream);
+         const options = {mimeType:  'audio/webm;'};
+         const mediaRecorder = new MediaRecorder(stream, options);
          startIntercomHandler = function () {
            mediaRecorder.start(TIME_SLICE);
            console.log("Recorder started.");
@@ -144,6 +164,7 @@ export default {
          }
          mediaRecorder.ondataavailable = function (e) {
            console.log("MediaRecorder has data: "+ e);
+           sendClientAudioData(e.data);
          }
 
          //this.mediaRecorder.ondataavailable = function (e) {
@@ -158,6 +179,10 @@ export default {
        this.intercomPossible = false;
        //console.log("The mediaDevices.getUserMedia() method is NOT supported.");
        this.displayError("The mediaDevices.getUserMedia() method is NOT supported.");
+    }
+    sendClientAudioData = function (data) {
+      console.log("Sending client audio data");
+      io_connection.emit('webClientAudioData', data);
     }
   },
   data() {
@@ -176,7 +201,8 @@ export default {
       errorMsg: '',
       showError: false,
       intercomPossible: false,
-      intercomRecording: false
+      intercomRecording: false,
+      mp3Played: false
     }
   },
   methods: {
@@ -200,6 +226,10 @@ export default {
       io_connection.emit('answered', this.currentUserId) 
 
     },
+//    sendClientAudioData(data) {
+//      console.log("Sending client audio data from clientId " +this.clientId);
+//      this.io_connection.emit('webClientAudioData', this.clientId, data);
+//    },
     displayError(errorMsg) {
       this.showError = true;
       this.errorMsg = errorMsg;
