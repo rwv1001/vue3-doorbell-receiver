@@ -1,4 +1,4 @@
- <template>
+<template>
   <div id="home">
     <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
       @finish="finish" />
@@ -259,7 +259,7 @@ export default {
     io_connection.on('sendOffer', offer=>{
       console.log('received an offer')
       this.serverOffer = offer;
-    }
+    })
     if (navigator.mediaDevices.getUserMedia) {
        this.intercomPossible = true;
        console.log("The mediaDevices.getUserMedia() method is supported.");

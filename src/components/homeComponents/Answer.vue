@@ -12,7 +12,7 @@
       <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Start Intercom</h1>
     </div>
 
-    <div v-else-if="intercomClientId == clientId" @click="hangUp" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-danger">
+    <div v-else-if="intercomClientId == dataClientId" @click="hangUp" class="c-item-1 m-0 justify-content-center d-flex c-answer bg-danger">
       <h1 class="align-self-center c-vertical text-light m-0 display-4 ">Hang Up</h1>
     </div>
     <div v-else class="c-item-1 m-0 justify-content-center d-flex bg-secondary">
@@ -43,15 +43,15 @@
 
 export default {
   name: 'AnswerPage',
-  props: ['doormessages', 'clientId', 'intercomClientId', "intercomPossible"],
+  props: ['doormessages', 'dataClientId', 'intercomClientId', "intercomPossible"],
   methods: {
     answered() {
       this.$emit('answered');
       this.answering = true;
     },
     startIntercom() {
-      if(this.clientId != this.intercomClientId){
-        this.$emit('startIntercom', this.clientId)
+      if(this.dataClientId != this.intercomClientId){
+        this.$emit('startIntercom', this.dataClientId)
         console.log("one possibility");
       } else {
         console.log("Someone is already using the intercom")
