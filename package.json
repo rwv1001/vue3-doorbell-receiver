@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "servehttps": "vue-cli-service serve --https",
     "serve1": "vue-cli-service serve --host cambdoorbell.duckdns.org",
-    "serve2": "vue-cli-service serve --host test.cambdoorbell.duckdns.org",
+    "servetest": "vue-cli-service serve --host test.cambdoorbell.duckdns.org --https",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },

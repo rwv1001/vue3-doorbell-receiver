@@ -69,7 +69,14 @@
 <script>
 import axios from 'axios';
 import { io } from "socket.io-client";
-const socket = io("https://socket.cambdoorbell.duckdns.org");
+import { uuid } from 'vue-uuid'
+const settingsId = uuid.v4(); 
+const password = 'x';
+const socket = io("https://socket.cambdoorbell.duckdns.org", {    
+    auth: {
+        settingsId,password
+    }
+});
 
 export default {
   name: 'Settings',
