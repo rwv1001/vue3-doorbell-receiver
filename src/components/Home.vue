@@ -69,6 +69,8 @@ var sendClientAudioData;
 var hangUpHandler;
 let hangingup = false;
 let heartbeatcount = 0;
+let sendingNewOffer = false;
+const SENDING_NEW_OFFER_INTERVAL = 10000;
 const  HANGUPBEATS = 5; 
 const intercomCallConst = async e=>{
     didIOffer = true;
@@ -85,7 +87,18 @@ const intercomCallConst = async e=>{
         console.log(offer);
         peerConnection.setLocalDescription(offer);
         console.log("Sending newOffer")
+        sendingNewOffer = true;
         io_connection.emit('newOffer',offer); //send offer to signalingServer
+        let actionInterval = setInterval(() => {  
+            if(sendingNewOffer) {
+               console.log('Action performed - emit newOffer');
+               io_connection.emit('newOffer',offer);
+            } else {
+               clearInterval(actionInterval); // Clear the interval
+               console.log('Timer stopped');
+            }
+
+        }, SENDING_NEW_OFFER_INTERVAL);
     }catch(err){
         didIOffer = false;
         console.log(err)
@@ -349,6 +362,11 @@ export default {
       console.log('Handling hangupResponse')
       hangingup = false;
     })
+    io_connection.on('sendOfferAcknowledgment', () => {
+      console.log('Handling sendOfferAcknowledgment')
+      sendingNewOffer = false;
+    })
+
 
   },
   data() {
