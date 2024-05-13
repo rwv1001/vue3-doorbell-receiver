@@ -51,8 +51,8 @@ export default {
     },
     startIntercom() {
       if(this.dataClientId != this.intercomClientId){
+        console.log("Emit startIntercom")
         this.$emit('startIntercom', this.dataClientId)
-        console.log("one possibility");
       } else {
         console.log("Someone is already using the intercom")
       }

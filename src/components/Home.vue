@@ -37,9 +37,10 @@ import {useDateFormat, useNow} from "@vueuse/core";
 //})
 const password = 'x';
 const clientId = uuid.v4();
+const userName = clientId;
 const io_connection = io('https://socket.cambdoorbell.duckdns.org',{
     auth: {
-        clientId,password
+        userName,password
     }
 })
 
@@ -63,12 +64,15 @@ let peerConfiguration = {
 
 const HEART_BEAT = 2000;
 const connected = ref(true);
-const TIME_SLICE = 5000;
 var startIntercomHandler;
 var sendClientAudioData;
 var hangUpHandler;
-
+let hangingup = false;
+let heartbeatcount = 0;
+const  HANGUPBEATS = 5; 
 const intercomCallConst = async e=>{
+    didIOffer = true;
+    console.log("intercomCallConst userName = " + userName) 
     await fetchUserMedia();
 
     //peerConnection is all set with our STUN servers sent over
@@ -80,12 +84,63 @@ const intercomCallConst = async e=>{
         const offer = await peerConnection.createOffer();
         console.log(offer);
         peerConnection.setLocalDescription(offer);
-        didIOffer = true;
+        console.log("Sending newOffer")
         io_connection.emit('newOffer',offer); //send offer to signalingServer
     }catch(err){
+        didIOffer = false;
         console.log(err)
     }
 }
+
+const answerResponseConst = async(offerObj)=>{
+    //addAnswer is called in socketListeners when an answerResponse is emitted.
+    //at this point, the offer and answer have been exchanged!
+    //now CLIENT1 needs to set the remote
+    await peerConnection.setRemoteDescription(offerObj.answer)
+    console.log("answerResponseConst peerConnection:")
+    console.log(peerConnection)
+
+
+}
+
+const startIntercomConst = async(offerObj)=>{
+    console.log("startIntercomConst userName = " + userName)
+    console.log("startIntercomConst called fetchUserMedia")
+    await fetchUserMedia()
+    console.log("startIntercomConst called createPeerConnection(offerObj)");
+    await createPeerConnection(offerObj);
+    const answer = await peerConnection.createAnswer({}); //just to make the docs happy
+    console.log("startIntercomConst called await peerConnection.createAnswer({});")
+    await peerConnection.setLocalDescription(answer); //this is CLIENT2, and CLIENT2 uses the answer as the localDesc
+    console.log("startIntercomConst called await peerConnection.setLocalDescription(answer);")
+    console.log("**** offerObj ****")
+    console.log(offerObj)
+    console.log("**** answer ****")
+    console.log(answer)
+    // console.log(peerConnection.signalingState) //should be have-local-pranswer because CLIENT2 has set its local desc to it's answer (but it won't be)
+    //add the answer to the offerObj so the server knows which offer this is related to
+    offerObj.answer = answer 
+    //emit the answer to the signaling server, so it can emit to CLIENT1
+    //expect a response from the server with the already existing ICE candidates
+    console.log("EmitWithAck newAnswer")
+    const offerIceCandidates = await io_connection.emitWithAck('newAnswer',offerObj)
+    offerIceCandidates.forEach(c=>{
+        peerConnection.addIceCandidate(c);
+        console.log("======Added Ice Candidate======")
+    })
+    console.log(offerIceCandidates)
+    console.log("startIntercomConst peerConnection:")
+    console.log(peerConnection) 
+
+}
+
+const hangupConst = async () => {
+    await peerConnection.close()
+    io_connection.emit('hangupReset')
+    peerConnection = null;
+    hangingup = true;
+}
+
 const fetchUserMedia = ()=>{
     return new Promise(async(resolve, reject)=>{
         try{
@@ -94,6 +149,7 @@ const fetchUserMedia = ()=>{
                // video: true,
                audio: true,
             });
+            console.log('Setting local Streat');
             localStream = stream;    
             resolve();    
         }catch(err){
@@ -112,8 +168,9 @@ const createPeerConnection = (offerObj)=>{
         const remoteVideoEl = document.querySelector('#remote-video');
         remoteVideoEl.srcObject = remoteStream;
 
-
+        console.log("Let's add some tracks to local stream")
         localStream.getTracks().forEach(track=>{
+            console.log("Adding a track to local stream")
             //add localtracks so that they can be sent once the connection is established
             peerConnection.addTrack(track,localStream);
         })
@@ -127,9 +184,10 @@ const createPeerConnection = (offerObj)=>{
             console.log('........Ice candidate found!......')
             console.log(e)
             if(e.candidate){
+                console.log("createPeerConnection: Emit sendIceCandidateToSignalingServer, didIOffer = " + didIOffer)
                 io_connection.emit('sendIceCandidateToSignalingServer',{
                     iceCandidate: e.candidate,
-                    iceClientId: clientId,
+                    iceUserName: userName,
                     didIOffer,
                 })    
             }
@@ -140,7 +198,7 @@ const createPeerConnection = (offerObj)=>{
             console.log(e)
             e.streams[0].getTracks().forEach(track=>{
                 remoteStream.addTrack(track,remoteStream);
-                console.log("Here's an exciting moment... fingers cross")
+                console.log("*******************  Here's an exciting moment... fingers cross ****************************")
             })
         })
 
@@ -148,6 +206,7 @@ const createPeerConnection = (offerObj)=>{
             //this won't be set when called from call();
             //will be set when we call from answerOffer()
             // console.log(peerConnection.signalingState) //should be stable because no setDesc has been run yet
+            console.log("createPeerConnection: peerConnection.setRemoteDescription(offerObj.offer)")
             await peerConnection.setRemoteDescription(offerObj.offer)
             // console.log(peerConnection.signalingState) //should be have-remote-offer, because client2 has setRemoteDesc on the offer
         }
@@ -178,11 +237,16 @@ export default {
        this.beatInterval = setInterval(()=> {
           let now = new Date()
           let timeDiff = moment.duration(Date.parse(this.nextBeat)- now)
-          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff)
+          heartbeatcount++;
+          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff + ", heartbeatcount = " + heartbeatcount)
           if(timeDiff < 0){
             this.con = false 
           } else {
             this.con = true;
+          }
+          if(heartbeatcount%HANGUPBEATS == 0 && hangingup) {
+            console.log('emit hangup beat reset')
+            io_connection.emit('hangupReset')
           }
        }, HEART_BEAT)
     }
@@ -195,8 +259,14 @@ export default {
     this.dataClientId = clientId;
     //uuid.v4();  
     io_connection.on('connect', (socket) => {
-      console.log('App.vue connected');
-     
+      if(socket){
+        const keys = Object.keys(socket);
+        console.log("Attributes of socket:");
+        keys.forEach((key) => {
+           console.log(key);
+        });    
+        console.log('App.vue connected, socket_id = ' );
+      }
      // this.con = true;      
     })
     io_connection.on('messageListMsg', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
@@ -217,7 +287,7 @@ export default {
              if ( message_uuid == 0) {
                 if(this.intercomRecording) {
                    this.intercomRecording = false;
-                   hangUpHandler();
+                   hangupConst();
                 }
              } 
              console.log("user generator is "+user_generator + ", and current UserID is " +  this.currentUserId);
@@ -249,7 +319,7 @@ export default {
           this.doormessages = [];
           if(this.intercomRecording) {
              this.intercomRecording = false;
-             hangUpHandler();
+             hangupConst();
           }
     })
     io_connection.on('disconnect', () => {
@@ -258,47 +328,28 @@ export default {
     })
     io_connection.on('sendOffer', offer=>{
       console.log('received an offer')
+      this.intercomPossible = true;
       this.serverOffer = offer;
     })
-    if (navigator.mediaDevices.getUserMedia) {
-       this.intercomPossible = true;
-       console.log("The mediaDevices.getUserMedia() method is supported.");
-      // this.displayError("The mediaDevices.getUserMedia() method is supported.");
-       const constraints = { audio: true };
-       let chunks = [];
-       let onSuccess = function (stream) {
-         const options = {mimeType:  'audio/webm;'};
-         const mediaRecorder = new MediaRecorder(stream, options);
-         startIntercomHandler = function () {
-           mediaRecorder.start(TIME_SLICE);
-           console.log("Recorder started.");
-         }
-         hangUpHandler = function () {
-           mediaRecorder.stop();
-           console.log("Recorder stopped.");  
-         }
-         mediaRecorder.ondataavailable = function (e) {
-           console.log("MediaRecorder has data: "+ e);
-           sendClientAudioData(e.data);
-         }
+    io_connection.on('answerResponse', offerObj=>{
+      console.log('Handling answerResponse')
+      console.log(offerObj)
+      answerResponseConst(offerObj)
+    })
+    io_connection.on('receivedIceCandidateFromServer',iceCandidate=>{
+      console.log('*********** Handling receivedIceCandidateFromServer ******************')
+      peerConnection.addIceCandidate(iceCandidate)
+      console.log(iceCandidate)
+    })
+    io_connection.on('resetOffer', () => {
+      console.log('Handling resetOffer')
+      intercomCallConst()  
+    })
+    io_connection.on('hangupResponse', () => {
+      console.log('Handling hangupResponse')
+      hangingup = false;
+    })
 
-         //this.mediaRecorder.ondataavailable = function (e) {
-         //  console.log("We have data! "+e);
-         //};  
-       }
-       let onError = function (err) {
-         console.log("The following error occured: " + err);
-       };
-       navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-    } else {
-       this.intercomPossible = false;
-       //console.log("The mediaDevices.getUserMedia() method is NOT supported.");
-       this.displayError("The mediaDevices.getUserMedia() method is NOT supported.");
-    }
-    sendClientAudioData = function (data) {
-      console.log("Sending client audio data");
-      io_connection.emit('webClientAudioData', data);
-    }
   },
   data() {
     return {
@@ -354,21 +405,23 @@ export default {
       console.log("Initiating Intercom Call")
       intercomCallConst()
     },
-
-    startIntercom(client_Id) {
-
-      console.log("startIntercom called with clientId: "+ client_Id)
-      io_connection.emit('updateIntercomClientId',client_Id, this.currentUserId );
-      if(!this.intercomRecording) {
-         startIntercomHandler();
+    startIntercom() {
+      console.log("startIntercom called with clientId: "+ clientId)
+      if(!this.intercomRecording && this.serverOffer){
+         startIntercomConst(this.serverOffer)
+         this.intercomRecording = true;
+         console.log("Emitting updateIntercomClientId")
+         io_connection.emit('updateIntercomClientId',clientId, this.currentUserId );
+      } else {
+        console.log("For some reason, we didn't start startIntercomConst")
+        console.log("this.intercomRecording = " + this.intercomRecording)
+        console.log("this.serverOffer = " +  this.serverOffer);
       }
-
-      this.intercomRecording = true;
     },
     hangUp() {
      io_connection.emit('updateIntercomClientId',0, this.currentUserId);
      if(this.intercomRecording) {
-       hangUpHandler();
+       hangupConst();
      }
      this.intercomRecording  = false;
     },

@@ -22,7 +22,7 @@ export default {
 
 <style>
 #videos{
-    display: grid;
+    display: none;
     grid-template-columns: 1fr 1fr;
     gap: 2em;
     width: 600px;
@@ -52,6 +52,6 @@ export default {
     bottom: 0;
     right: 200px;
     cursor: pointer;
-/*    display: none;*/
+    display: none;
   }
 </style>

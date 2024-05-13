@@ -71,10 +71,11 @@ import axios from 'axios';
 import { io } from "socket.io-client";
 import { uuid } from 'vue-uuid'
 const settingsId = uuid.v4(); 
+const userName = settingsId;
 const password = 'x';
 const socket = io("https://socket.cambdoorbell.duckdns.org", {    
     auth: {
-        settingsId,password
+        userName,password
     }
 });
 
