@@ -91,8 +91,8 @@ const intercomCallConst = async e=>{
         io_connection.emit('newOffer',offer); //send offer to signalingServer
         let actionInterval = setInterval(() => {  
             if(sendingNewOffer) {
-               console.log('Action performed - emit newOffer');
-               io_connection.emit('newOffer',offer);
+               console.log('Action NOT performed - emit newOffer');
+               //io_connection.emit('newOffer',offer);
             } else {
                clearInterval(actionInterval); // Clear the interval
                console.log('Timer stopped');
@@ -258,8 +258,8 @@ export default {
             this.con = true;
           }
           if(heartbeatcount%HANGUPBEATS == 0 && hangingup) {
-            console.log('emit hangup beat reset')
-            io_connection.emit('hangupReset')
+            console.log('do not emit hangup beat reset')
+           // io_connection.emit('hangupReset')
           }
        }, HEART_BEAT)
     }
@@ -355,8 +355,12 @@ export default {
       console.log(iceCandidate)
     })
     io_connection.on('resetOffer', () => {
-      console.log('Handling resetOffer')
-      intercomCallConst()  
+      if(this.offerer) {
+         console.log('Handling resetOffer')
+         intercomCallConst() 
+      } else {
+        console.log('resetOffer: client is not offerer');
+      } 
     })
     io_connection.on('hangupResponse', () => {
       console.log('Handling hangupResponse')
@@ -387,7 +391,8 @@ export default {
       intercomPossible: false,
       intercomRecording: false,
       mp3Played: false,
-      serverOffer: null
+      serverOffer: null,
+      offerer: false
     }
   },
   methods: {
@@ -421,6 +426,7 @@ export default {
     },
     intercomCall() {
       console.log("Initiating Intercom Call")
+      this.offerer = true;
       intercomCallConst()
     },
     startIntercom() {
