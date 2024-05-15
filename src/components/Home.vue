@@ -332,6 +332,15 @@ export default {
    
           }
     })
+    io_connection.on('playfile', (mp3_message_to_puppeteer) => {
+       let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_puppeteer;
+       console.log("playfile, Try to play the mp3: "+ url + ", offerer = " + this.offerer)
+       if(mp3_message_to_puppeteer.length > 0 && this.offerer) {
+            var audioElement = new Audio(url);
+            audioElement.playbackRate=1.2;
+            audioElement.play();
+       } 
+    })
     io_connection.on('heart_beat', () => {
 //       this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
     })

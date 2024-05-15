@@ -1,13 +1,17 @@
 <template>
-    <div class="c-date d-flex justify-content-center fw-bold d-none d-sm-block">
+    <div class="d-none d-sm-block">
+    <div class="c-date d-flex justify-content-center fw-bold">
       <div class="align-self-center"> 
-        <h2 class="d-none d-sm-block">{{currentDate}}</h2> 
+        <h2>{{currentDate}}</h2> 
       </div>
     </div>
-    <div class="c-date-small d-flex justify-content-center fw-bold d-block d-sm-none">
+    </div>
+    <div class="d-block d-sm-none">
+    <div class="c-date-small d-flex justify-content-center fw-bold">
       <div class="align-self-center">
         <h5 class="d-block d-sm-none">{{currentDate}}</h5>
       </div>
+    </div>
     </div>
     <div class="c-time flex-fill d-flex justify-content-center ">  
       <h1 class="align-self-center m-0 display-1 fw-bold">{{currentTime}}</h1>
