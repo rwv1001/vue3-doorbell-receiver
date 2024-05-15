@@ -1,7 +1,14 @@
 <template>
-  <div id="home">
+  <div id="home" class="d-flex flex-column c-fullheight border border-dark border-top-1 border-bot-0">
+  <div class="row justify-content-center">
+    <div class="col-auto  flex-fill"></div>
+    <div class="col-auto bg-lightgrey border border-3 border-top-0 border-dark rounded-bottom pt-1 pb-0 text-center"><h6>{{currentUserName}}</h6></div>
+    <div class="col-auto  flex-fill"></div>
+  </div> 
     <NavMenu :currentUserId="currentUserId" :currentUserName="currentUserName" @updateUser="updateUser"
       @finish="finish" />
+
+
     <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :dataClientId="dataClientId" :intercomClientId="intercomClientId" :intercomPossible="intercomPossible"/>
     <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
     <DisplayTime v-if="doormessages.length == 0" />
@@ -479,6 +486,9 @@ export default {
 #home {
   overflow: hidden;
   /* Hide scrollbars */
+}
+.bg-lightgrey {
+  background-color: lightgrey;
 }
 .c-error {
     background-color: #ffcccc; /* Light red color for the centered div */

@@ -7,8 +7,8 @@ import router from './router'
 // import VueCookies from 'vue-cookies';
 
 // Vue.use(VueCookies, { expires: '7d'})
-
-createApp(App).use(router).mount('#app')
+const app = createApp(App)
+app.use(router).mount('#app')
 console.log("hello world RWV")
 
 import "bootstrap/dist/js/bootstrap.js"

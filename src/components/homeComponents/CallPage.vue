@@ -12,6 +12,7 @@
 
 export default {
   name: 'CallPage',
+  emits: ["intercomCall"],
   methods: {
     startIntercomCall() {
       this.$emit('intercomCall');

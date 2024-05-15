@@ -1,15 +1,19 @@
 <template>
   <div class="c-topright d-flex">
-    <h6 v-show="showUser" class="p-3">{{currentUserName}}</h6>
     <div class="c-item m-0">
-      <nav class="navbar bg-light">
+      <nav class="navbar bg-light ">
         <div class="container-fluid">
-
-          <button @click="toggleUser" class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+          <button @click="toggleUser" class="d-lg-none navbar-toggler ms-auto c-navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon c-navbar-toggler-icon"></span>
+          </button>
+          <button @click="toggleUser" class="d-none d-lg-block navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
+
           <div v-if="!finished" class="collapse.show navbar-collapse" id="navbarSupportedContent">
             <ul  class="list-group">
               <div  v-for="user in this.users" :key="user.id">  
@@ -92,12 +96,24 @@ export default {
 </script>
 
 <style>
+
 .c-item {
 
   border: 1px solid #333;
   background-color: rgb(176, 190, 136);
 
 }
+.c-navbar-toggler {
+  padding: 0rem; /* Adjusts the padding around the icon */
+  width: 3rem; /* Adjusts the width of the button */
+  height: 3rem; /* Adjusts the height of the button */
+}
+
+.c-navbar-toggler-icon {
+  font-size: 0.5em; /* Adjusts the size of the icon bars */
+  transform: translateY(-4px);
+}
+
 
 .c-topright {
   position: absolute;

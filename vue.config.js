@@ -10,5 +10,16 @@ module.exports = defineConfig({
       })
       return definitions
     })
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        options.compilerOptions = {
+          ...options.compilerOptions, // Spread existing options
+          isCustomElement: tag => tag.startsWith('h7')
+        };
+        return options;
+      });
   }
 })
