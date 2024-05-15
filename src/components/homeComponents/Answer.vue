@@ -7,7 +7,7 @@
               </div>
               <!-- Visible only on sm  -->
                <div v-for="message in doormessages" class="d-none d-sm-block d-md-none">
-                  <h6>{{message}}</h6>
+                  <h5>{{message}}</h5>
               </div>
               <!-- Visible only on md  -->
                <div v-for="message in doormessages" class="d-none d-md-block d-lg-none">
@@ -119,6 +119,13 @@ h6 {
   margin: 0;
   padding: 0;
 }
+h5 {
+  font-size: 2rem; /* Smaller than the standard h6 size */
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
 .display-6{ 
   font-size: 1.3rem; /* Smaller than the standard h6 size */
   font-weight: bold;
