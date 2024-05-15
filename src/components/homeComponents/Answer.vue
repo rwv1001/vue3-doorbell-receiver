@@ -62,12 +62,12 @@
       <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Hang Up</h1>
     </div>
     <div v-else-if="intercomPossible"  class="col d-flex justify-content-center align-items-center  c-vh-20 bg-secondary">
-      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Intercom in Use<</h1>
-      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Intercom in Use<</h1>
-      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Intercom in Use<</h1>
-      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">Intercom in Use<</h1>
-      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Intercom in Use<</h1>
-      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Intercom in Use<</h1>
+      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Intercom in Use</h1>
     </div>
 
   </div>

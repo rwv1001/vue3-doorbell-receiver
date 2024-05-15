@@ -10,7 +10,7 @@
 
 
     <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :dataClientId="dataClientId" :intercomClientId="intercomClientId" :intercomPossible="intercomPossible"/>
-    <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert"/>
+    <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert" :intercomRecording="intercomRecording"/>
     <DisplayTime v-if="doormessages.length == 0" />
     <CallPage @intercomCall="intercomCall" />
     <router-view />
@@ -57,6 +57,7 @@ let localStream; //a var to hold the local video stream
 let remoteStream; //a var to hold the remote video stream
 let peerConnection; //the peerConnection that the two clients use to talk
 let didIOffer = false;
+let muted = true;
 let peerConfiguration = {
     iceServers:[
         {
@@ -170,7 +171,7 @@ const fetchUserMedia = ()=>{
                audio: true,
             });
             console.log('Setting local Streat');
-            localStream = stream;    
+            localStream = stream;
             resolve();    
         }catch(err){
             console.log(err);
@@ -459,6 +460,7 @@ export default {
     
     toggleSoundAlert() {
       this.soundAlertStatus = !this.soundAlertStatus;
+      muted = !muted;
       console.log("soundAlertStatus = " + this.soundAlertStatus);
     }
 
