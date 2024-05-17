@@ -62,8 +62,9 @@ let peerConfiguration = {
     iceServers:[
         {
             urls:[
-              'stun:stun.l.google.com:19302',
-              'stun:stun1.l.google.com:19302'
+               'stun:cambdoorbell.duckdns.org:3478'
+              //'stun:stun.l.google.com:19302',
+              //'stun:stun1.l.google.com:19302'
             ]
         }
     ]
@@ -470,6 +471,9 @@ export default {
     toggleSoundAlert() {
       this.soundAlertStatus = !this.soundAlertStatus;
       muted = !muted;
+      var audioElement = new Audio("https://assets.cambdoorbell.duckdns.org/assets/silent.mp3");
+                 audioElement.playbackRate=1.5;
+                 audioElement.play();
       console.log("soundAlertStatus = " + this.soundAlertStatus);
     }
 
