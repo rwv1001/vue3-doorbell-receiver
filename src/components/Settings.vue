@@ -8,7 +8,7 @@
       is pressed. The 'Wait Msg' is the message played to the visitor once the button is pressed. The 'Reply Msg' is the
       message played to the visitor once someone has registered their intention to answer the door. The
       'Response Msg' is the message displayed on all the receivers once someone has registered their intention to
-      answer the door. The 'Intercom Msg' is the message displayed on the receivers when someone has started an intercom sesstion.
+      answer the door. The 'Intercom Msg' is the message displayed on the receivers when someone has started an intercom session. The 'No Answer Msg' is the message played to the visitor when noone has  registered their intention to respond to the call after 30 second or so.
     </p>
     <div class="d-flex justify-content-center c-formcontainer">
       <div class="d-flex justify-content-center c-wide">
@@ -19,6 +19,7 @@
         <div class="p-2 flex-grow-1 bd-highlight c-label">Reply Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Response Msg</div>
         <div class="p-2 flex-grow-1 bd-highlight c-label">Intercom Msg</div>
+        <div class="p-2 flex-grow-1 bd-highlight c-label">No Answer Msg</div>
 
         <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone</div>
         <div style="display: none;" class="p-2 flex-grow-1 bd-highlight c-label">Phone No.</div>
@@ -45,6 +46,7 @@
             <textarea :id="ResponseMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.ResponseMsg}}</textarea>
 
             <textarea :id="IntercomMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.IntercomMsg}}</textarea>
+            <textarea :id="NoAnswerMsgId(setting.id)" class="form-control flex-grow-1 c-field" aria-label="With textarea">{{setting.NoAnswerMsg}}</textarea>
 
             <div style="display: none;"> 
             <div  v-if="setting.Phone"  class="flex-grow-1 c-field c-check" > 
@@ -103,6 +105,9 @@ export default {
     IntercomMsgId(id) {
       return "IntercomMsg"+id;
     },
+    NoAnswerMsgId(id) {
+      return "NoAnswerMsg"+id;
+    },    
     PhoneId(id) {      
       return "Phone"+id;
     },     
@@ -121,6 +126,7 @@ export default {
              ReplyMsg: document.getElementById("ReplyMsg"+id).value,
              ResponseMsg: document.getElementById("ResponseMsg"+id).value,
              IntercomMsg: document.getElementById("IntercomMsg"+id).value,
+             NoAnswerMsg: document.getElementById("NoAnswerMsg"+id).value,
              Phone: document.getElementById("Phone"+id).checked,
              PhoneNumber: document.getElementById("PhoneNumber"+id).value        
            }
@@ -131,7 +137,8 @@ export default {
              WaitMsg: data.WaitMsg,
              ReplyMsg: data.ReplyMsg,
              ResponseMsg: data.ResponseMsg,
-             IntercomMsg: data.IntercomMsg
+             IntercomMsg: data.IntercomMsg,
+             NoAnswerMsg: data.NoAnswerMsg
            }
            const newJSONData = JSON.stringify(newData);
            const oldJSONData = JSON.stringify(oldData);
@@ -144,6 +151,7 @@ export default {
       this.dbSettings.ReplyMsg =  document.getElementById("ReplyMsg"+id).value;
       this.dbSettings.ResponseMsg =  document.getElementById("ResponseMsg"+id).value;
       this.dbSettings.IntercomMsg =  document.getElementById("IntercomMsg"+id).value;
+      this.dbSettings.NoAnswerMsg =  document.getElementById("NoAnswerMsg"+id).value;
       this.dbSettings.Phone =  document.getElementById("Phone"+id).value;
       this.dbSettings.PhoneNumber =  document.getElementById("PhoneNumber"+id).value;
  

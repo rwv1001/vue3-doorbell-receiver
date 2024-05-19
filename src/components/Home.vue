@@ -355,6 +355,7 @@ export default {
     })
     io_connection.on('disconnect', () => {
       console.log('App.vue disconnected');
+      //this.soundAlertStatus = false;
       this.con = false;
     })
     io_connection.on('sendOffer', offer=>{
@@ -398,7 +399,7 @@ export default {
       current_message_uuid: 0,
       con: false,
       currentUserId: 1,
-      currentUserName: '',
+      currentUserName: 'Not Assigned',
       soundAlertStatus: false,
       nextBeat: new Date(),
       beatInterval: null,

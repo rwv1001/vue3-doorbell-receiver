@@ -5,7 +5,9 @@ import App from './App.vue'
 import router from './router'
 // import Vue from 'vue';
 // import VueCookies from 'vue-cookies';
-
+if (process.env.NODE_ENV === 'production') {
+  console.log = function () {}; // Disable console.log
+}
 // Vue.use(VueCookies, { expires: '7d'})
 const app = createApp(App)
 app.use(router).mount('#app')
