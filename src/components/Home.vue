@@ -272,6 +272,17 @@ export default {
           }
        }, HEART_BEAT)
     }
+    fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data =>{
+       data.forEach((item) => {
+          console.log("mounted wait file: "+ item.WaitMsgFile)
+          this.pushMP3(item.NoAnswerMsgFile)
+          this.pushMP3(item.RequestMsgFile)
+          this.pushMP3(item.WaitMsgFile)
+          this.pushMP3(item.ReplyMsgFile)
+          this.pushMP3(item.ResponseMsgFile)
+          this.pushMP3(item.IntercomMsgFile)
+       })
+    }).catch(err => console.log(err.message))
 
     if(my_cookie_user != null) {
       this.currentUserName = my_cookie_user.name;
@@ -290,6 +301,19 @@ export default {
         console.log('App.vue connected, socket_id = ' );
       }
      // this.con = true;      
+    })
+    io_connection.on('registerMP3Files', (files) => {
+      console.log("handling registerMP3Files")
+      files.forEach((fileName) => {
+      // Your custom action here
+
+         console.log(`Processing file in registerMP3Files handler: ${fileName}`);
+         const url = "https://assets.cambdoorbell.duckdns.org/assets/"+fileName
+         const audioElement = new Audio(url);
+         audioPair = {url:url, audioObject: audioElement}
+         this.audioPairs.push(audioPair)
+
+      });
     })
     io_connection.on('messageListMsg', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
           this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
@@ -316,10 +340,16 @@ export default {
              if(user_generator != this.currentUserId && message_uuid!=0) {
                let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
+               var audioPair = this.audioPairs.find(pair => pair.url === url);
+               if(!audioPair && mp3_message_to_browser.length > 0) {
+                  const audioElement = new Audio(url);
+                  audioPair = {url:url, audioObject: audioElement}
+                  this.audioPairs.push(audioPair)
+                  this.soundAlertStatus = false;
+               }
                if(this.soundAlertStatus && mp3_message_to_browser.length > 0 && this.mp3Played == false) {
-                 var audioElement = new Audio(url);
-                 audioElement.playbackRate=1.5;
-                 audioElement.play();
+                 audioPair.audioObject.playbackRate=1.5;
+                 audioPair.audioObject.play();
                  this.mp3Played = true
                } else {
                  if(this.mp3Played == false) {
@@ -411,7 +441,8 @@ export default {
       intercomRecording: false,
       mp3Played: false,
       serverOffer: null,
-      offerer: false
+      offerer: false,
+      audioPairs: []
     }
   },
   methods: {
@@ -421,6 +452,12 @@ export default {
       this.currentUserName = newUserName
       var user = { id:this.currentUserId, name:this.currentUserName}; 
       this.cookies.set("currentUsesr", user, "30d");
+    },
+    pushMP3(url){
+       const mp3URL = "https://assets.cambdoorbell.duckdns.org/assets/"+url;
+       const audioElement = new Audio(mp3URL);
+       const audioPair = {url:mp3URL, audioObject: audioElement}
+       this.audioPairs.push(audioPair)
     },
     dismissError() {
       this.showError = false;
@@ -472,9 +509,15 @@ export default {
     toggleSoundAlert() {
       this.soundAlertStatus = !this.soundAlertStatus;
       muted = !muted;
-      var audioElement = new Audio("https://assets.cambdoorbell.duckdns.org/assets/silent.mp3");
-                 audioElement.playbackRate=1.5;
-                 audioElement.play();
+      let silentUrl = "https://assets.cambdoorbell.duckdns.org/assets/silent.mp3";
+      var audioPair = this.audioPairs.find(pair => pair.url === silentUrl);
+      if(!audioPair) {
+         const audioElement = new Audio("https://assets.cambdoorbell.duckdns.org/assets/silent.mp3");
+         audioPair = {url:silentUrl, audioObject: audioElement}
+         this.audioPairs.push(audioPair)
+      }
+      audioPair.audioObject.playbackRate=1.5;
+      audioPair.audioObject.play();
       console.log("soundAlertStatus = " + this.soundAlertStatus);
     }
 
