@@ -272,17 +272,17 @@ export default {
           }
        }, HEART_BEAT)
     }
-    fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data =>{
-       data.forEach((item) => {
-          console.log("mounted wait file: "+ item.WaitMsgFile)
-          this.pushMP3(item.NoAnswerMsgFile)
-          this.pushMP3(item.RequestMsgFile)
-          this.pushMP3(item.WaitMsgFile)
-          this.pushMP3(item.ReplyMsgFile)
-          this.pushMP3(item.ResponseMsgFile)
-          this.pushMP3(item.IntercomMsgFile)
-       })
-    }).catch(err => console.log(err.message))
+ //   fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data =>{
+ //      data.forEach((item) => {
+ //         console.log("mounted wait file: "+ item.WaitMsgFile)
+ //         this.pushMP3(item.NoAnswerMsgFile)
+ //         this.pushMP3(item.RequestMsgFile)
+ //         this.pushMP3(item.WaitMsgFile)
+ //         this.pushMP3(item.ReplyMsgFile)
+ //         this.pushMP3(item.ResponseMsgFile)
+ //         this.pushMP3(item.IntercomMsgFile)
+ //      })
+//    }).catch(err => console.log(err.message))
 
     if(my_cookie_user != null) {
       this.currentUserName = my_cookie_user.name;
@@ -302,18 +302,24 @@ export default {
       }
      // this.con = true;      
     })
-    io_connection.on('registerMP3Files', (files) => {
-      console.log("handling registerMP3Files")
-      files.forEach((fileName) => {
+ //   io_connection.on('registerMP3Files', (files) => {
+   //   console.log("handling registerMP3Files")
+ //     files.forEach((fileName) => {
       // Your custom action here
 
-         console.log(`Processing file in registerMP3Files handler: ${fileName}`);
-         const url = "https://assets.cambdoorbell.duckdns.org/assets/"+fileName
-         const audioElement = new Audio(url);
-         audioPair = {url:url, audioObject: audioElement}
-         this.audioPairs.push(audioPair)
+   //      console.log(`Processing file in registerMP3Files handler: ${fileName}`);
+     //    const url = "https://assets.cambdoorbell.duckdns.org/assets/"+fileName
+   //      const audioElement = new Audio(url);
+   //      audioPair = {url:url, audioObject: audioElement}
+   //      this.audioPairs.push(audioPair)
 
-      });
+     // });
+    //})
+    io_connection.on('intercomTimeout', ()=> {
+       if(this.intercomRecording) {
+          this.intercomRecording = false;
+          hangupConst();
+       }
     })
     io_connection.on('messageListMsg', (message_uuid, message_list,  mp3_message_to_browser, user_generator, newIntercomClientId) => {
           this.nextBeat = moment().add(2*HEART_BEAT, 'milliseconds');
@@ -336,26 +342,41 @@ export default {
                    hangupConst();
                 }
              } 
+             console.log("messageListMsg:  intercomClientId = " +  this.intercomClientId + ", intercomPossible = " + this.intercomPossible)
              console.log("user generator is "+user_generator + ", and current UserID is " +  this.currentUserId);
              if(user_generator != this.currentUserId && message_uuid!=0) {
                let url = "https://assets.cambdoorbell.duckdns.org/assets/"+mp3_message_to_browser;
                console.log("Try to play the mp3: "+ url)
                var audioPair = this.audioPairs.find(pair => pair.url === url);
                if(!audioPair && mp3_message_to_browser.length > 0) {
+                 if(this.offerer) {
                   const audioElement = new Audio(url);
                   audioPair = {url:url, audioObject: audioElement}
                   this.audioPairs.push(audioPair)
                   this.soundAlertStatus = false;
+                  io_connection.emit('consoleLog', "had to create audio object for " + url )
+                  } else {
+                    this.soundAlertStatus  = false;
+                  }
+               } else {
+                  io_connection.emit('consoleLog', "found audio pair for  " + url )
                }
-               if(this.soundAlertStatus && mp3_message_to_browser.length > 0 && this.mp3Played == false) {
+
+               if(this.soundAlertStatus && mp3_message_to_browser.length > 0 && this.mp3Played == false && audioPair) {
                  audioPair.audioObject.playbackRate=1.5;
-                 audioPair.audioObject.play();
+                 audioPair.audioObject.volume = 1;
+                 if(!this.isSafari() ){
+                    audioPair.audioObject.play();
+                 }
                  this.mp3Played = true
+                  io_connection.emit('consoleLog', "played " + url )
                } else {
                  if(this.mp3Played == false) {
+                      io_connection.emit('consoleLog', "unable to play " + mp3_message_to_browser +". this.soundAlertStatus = " + this.soundAlertStatus )
                       console.log("unable to play " + mp3_message_to_browser +". this.soundAlertStatus = " + this.soundAlertStatus);
                  } else {
                    console.log("File " + mp3_message_to_browser + " has already been played");
+                    io_connection.emit('consoleLog',"File " + mp3_message_to_browser + " has already been played");
                  }
                   
                }
@@ -453,11 +474,26 @@ export default {
       var user = { id:this.currentUserId, name:this.currentUserName}; 
       this.cookies.set("currentUsesr", user, "30d");
     },
+    isSafari() {
+      return  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    },
     pushMP3(url){
        const mp3URL = "https://assets.cambdoorbell.duckdns.org/assets/"+url;
-       const audioElement = new Audio(mp3URL);
-       const audioPair = {url:mp3URL, audioObject: audioElement}
-       this.audioPairs.push(audioPair)
+       var audioPair = this.audioPairs.find(pair => pair.url === mp3URL);
+       if(!audioPair){
+         const audioElement = new Audio(mp3URL);
+         audioElement.volume = 0.0001;
+         if(!this.isSafari() ){
+           audioElement.play();
+         }
+         //audioElement.volume = 1;
+         const audioPair = {url:mp3URL, audioObject: audioElement}
+         this.audioPairs.push(audioPair)
+         io_connection.emit('consoleLog', "Pushing "+  mp3URL)
+       } else {
+         io_connection.emit('consoleLog', "Not pushing "+  mp3URL)
+       }
+
     },
     dismissError() {
       this.showError = false;
@@ -515,10 +551,35 @@ export default {
          const audioElement = new Audio("https://assets.cambdoorbell.duckdns.org/assets/silent.mp3");
          audioPair = {url:silentUrl, audioObject: audioElement}
          this.audioPairs.push(audioPair)
+         io_connection.emit('consoleLog', "Silence created" )
+      } else {
+        io_connection.emit('consoleLog', "Silence found" )
       }
+
       audioPair.audioObject.playbackRate=1.5;
-      audioPair.audioObject.play();
+      if(!this.isSafari() ){
+         audioPair.audioObject.play();
+      }
       console.log("soundAlertStatus = " + this.soundAlertStatus);
+      if(this.soundAlertStatus){
+        io_connection.emit('consoleLog', "fetching json data" )
+        fetch('https://json.cambdoorbell.duckdns.org/settings').then(res => res.json()).then(data =>{
+           io_connection.emit('consoleLog', "Got json data" )
+           data.forEach((item) => {
+              io_connection.emit('consoleLog',"mounted wait file: "+ item.WaitMsgFile)
+              console.log("mounted wait file: "+ item.WaitMsgFile)
+              this.pushMP3(item.NoAnswerMsgFile)
+              this.pushMP3(item.RequestMsgFile)
+              this.pushMP3(item.WaitMsgFile)
+              this.pushMP3(item.ReplyMsgFile)
+              this.pushMP3(item.ResponseMsgFile)
+              this.pushMP3(item.IntercomMsgFile)
+           })
+        }).catch(err => {
+           console.log(err.message)
+           io_connection.emit('consoleLog',err.message)
+           })
+      }
     }
 
   }

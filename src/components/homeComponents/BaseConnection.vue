@@ -4,7 +4,7 @@
       <Icon v-else-if="!connected && answering" icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
       <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
       <Icon v-else icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
-      <div v-if="!intercomRecording" class="c-bottomright1 c-clickable" >
+      <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
        <Icon v-if="soundAlert && answering" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable c-answering" @click="toggleSoundAlertHandler" />
        <Icon v-else-if="!soundAlert && answering" icon="fluent:speaker-off-20-filled" class="big-icon c-answering" @click="toggleSoundAlertHandler" />
        <Icon v-else-if="soundAlert && !answering" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable" @click="toggleSoundAlertHandler" />
@@ -16,7 +16,7 @@
       <Icon v-else-if="!connected && answering" icon="ph:wifi-slash-bold" class="small-icon c-topleft" />
       <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="small-icon c-topleft" />
       <Icon v-else icon="ph:wifi-slash-bold" class="small-icon c-topleft" />
-      <div v-if="!intercomRecording" class="c-bottomright1 c-clickable" >
+      <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
        <Icon v-if="soundAlert && answering" icon="fluent:speaker-2-20-filled" class="small-icon c-bottomright1 c-clickable c-answering" @click="toggleSoundAlertHandler" />
        <Icon v-else-if="!soundAlert && answering" icon="fluent:speaker-off-20-filled" class="small-icon c-answering" @click="toggleSoundAlertHandler" />
        <Icon v-else-if="soundAlert && !answering" icon="fluent:speaker-2-20-filled" class="small-icon c-bottomright1 c-clickable" @click="toggleSoundAlertHandler" />
@@ -45,6 +45,9 @@
    
     },
     methods: {
+      isSafari() {
+        return  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      },
       toggleSoundAlertHandler() {
         this.$emit('toggleSoundAlert');
       }
