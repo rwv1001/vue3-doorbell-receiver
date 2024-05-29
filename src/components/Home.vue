@@ -55,7 +55,7 @@ const io_connection = io('https://socket.cambdoorbell.duckdns.org',{
 
 let localStream; //a var to hold the local video stream
 let remoteStream; //a var to hold the remote video stream
-let peerConnection; //the peerConnection that the two clients use to talk
+let peerConnection = null; //the peerConnection that the two clients use to talk
 let didIOffer = false;
 let muted = true;
 let peerConfiguration = {
@@ -73,9 +73,6 @@ let peerConfiguration = {
 
 const HEART_BEAT = 2000;
 const connected = ref(true);
-var startIntercomHandler;
-var sendClientAudioData;
-var hangUpHandler;
 let hangingup = false;
 let heartbeatcount = 0;
 let sendingNewOffer = false;
@@ -185,6 +182,9 @@ const createPeerConnection = (offerObj)=>{
         //RTCPeerConnection is the thing that creates the connection
         //we can pass a config object, and that config object can contain stun servers
         //which will fetch us ICE candidates
+        if(peerConnection != null){
+          peerConnection.close()
+        }
         peerConnection = await new RTCPeerConnection(peerConfiguration)
         remoteStream = new MediaStream()
         const remoteVideoEl = document.querySelector('#remote-video');
@@ -435,6 +435,11 @@ export default {
     io_connection.on('hangupResponse', () => {
       console.log('Handling hangupResponse')
       hangingup = false;
+      if(peerConnection !=null) {
+        peerConnection.close()
+        peerConnection = null
+      }
+      this.intercomRecording  = false;
     })
     io_connection.on('sendOfferAcknowledgment', () => {
       console.log('Handling sendOfferAcknowledgment')
@@ -508,10 +513,6 @@ export default {
       io_connection.emit('answered', this.currentUserId) 
 
     },
-//    sendClientAudioData(data) {
-//      console.log("Sending client audio data from clientId " +this.clientId);
-//      this.io_connection.emit('webClientAudioData', this.clientId, data);
-//    },
     displayError(errorMsg) {
       this.showError = true;
       this.errorMsg = errorMsg;
@@ -539,9 +540,16 @@ export default {
      if(this.intercomRecording) {
        hangupConst();
      }
-     this.intercomRecording  = false;
+     // this.intercomRecording  = false;
     },
-    
+    async  hangupConst() {
+      await peerConnection.close()
+      peerConnection = null
+      io_connection.emit('hangupReset')
+      
+      hangingup = true;
+    },
+ 
     toggleSoundAlert() {
       this.soundAlertStatus = !this.soundAlertStatus;
       muted = !muted;
