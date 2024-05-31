@@ -1,3 +1,4 @@
+
 <template>
   <div id="home" class="d-flex flex-column c-fullheight border border-dark border-top-1 border-bot-0">
   <div class="row justify-content-center">
