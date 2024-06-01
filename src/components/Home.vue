@@ -267,7 +267,7 @@ export default {
           let now = new Date()
           let timeDiff = moment.duration(Date.parse(this.nextBeat)- now)
           heartbeatcount++;
-          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff + ", heartbeatcount = " + heartbeatcount)
+          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff + ", heartbeatcount = " + heartbeatcount + ", intercomClientId = " + this.intercomClientId)
           if(timeDiff < 0){
             this.con = false 
           } else {
