@@ -129,6 +129,7 @@ const startIntercomConst = async(offerObj)=>{
     await fetchUserMedia()
     console.log("startIntercomConst called createPeerConnection(offerObj)");
     await createPeerConnection(offerObj);
+    if(peerConnection) {
     const answer = await peerConnection.createAnswer({}); //just to make the docs happy
     console.log("startIntercomConst called await peerConnection.createAnswer({});")
     await peerConnection.setLocalDescription(answer); //this is CLIENT2, and CLIENT2 uses the answer as the localDesc
@@ -150,8 +151,10 @@ const startIntercomConst = async(offerObj)=>{
     })
     console.log(offerIceCandidates)
     console.log("startIntercomConst peerConnection:")
-    console.log(peerConnection) 
-
+   // console.log(peerConnection) 
+    } else {
+      console.warn("startIntercomConst - peerConnection is null!!!!")
+    }
 }
 
 const hangupConst = async () => {
@@ -166,6 +169,7 @@ const hangupConst = async () => {
 const fetchUserMedia = ()=>{
     return new Promise(async(resolve, reject)=>{
         try{
+            localStream = null;
             console.log('getting user media')
             const stream = await navigator.mediaDevices.getUserMedia({
                // video: true,
