@@ -10,7 +10,7 @@
       @finish="finish" />
 
 
-    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :dataClientId="dataClientId" :intercomClientId="intercomClientId" :intercomPossible="intercomPossible"/>
+    <AnswerPage v-if="doormessages.length" :doormessages="doormessages" :intercomRecording="intercomRecording" @startIntercom="startIntercom" @answered="answered" @hangUp="hangUp" :dataClientId="dataClientId" :intercomClientId="intercomClientId" :intercomPossible="intercomPossible"/>
     <BaseConnection :connected="con" :answering="doormessages.length>0" :soundAlert="soundAlertStatus" @toggleSoundAlert="toggleSoundAlert" :intercomRecording="intercomRecording"/>
     <DisplayTime v-if="doormessages.length == 0" />
     <CallPage @intercomCall="intercomCall" />
@@ -155,7 +155,9 @@ const startIntercomConst = async(offerObj)=>{
 }
 
 const hangupConst = async () => {
-    await peerConnection.close()
+    if(peerConnection!= null) {
+      await peerConnection.close()
+    }
     io_connection.emit('hangupReset')
     peerConnection = null;
     hangingup = true;
@@ -184,7 +186,7 @@ const createPeerConnection = (offerObj)=>{
         //we can pass a config object, and that config object can contain stun servers
         //which will fetch us ICE candidates
         if(peerConnection != null){
-          peerConnection.close()
+          await peerConnection.close()
         }
         peerConnection = await new RTCPeerConnection(peerConfiguration)
         remoteStream = new MediaStream()
@@ -413,7 +415,10 @@ export default {
     io_connection.on('sendOffer', offer=>{
       console.log('received an offer')
       this.intercomPossible = true;
+      this.intercomRecording = false;
+      this.intercomClientId = 0;
       this.serverOffer = offer;
+      hangingup = false;
     })
     io_connection.on('answerResponse', offerObj=>{
       console.log('Handling answerResponse')
@@ -537,14 +542,16 @@ export default {
       }
     },
     hangUp() {
-     io_connection.emit('updateIntercomClientId',0, this.currentUserId);
+     // io_connection.emit('updateIntercomClientId',0, this.currentUserId);
      if(this.intercomRecording) {
        hangupConst();
      }
      // this.intercomRecording  = false;
     },
     async  hangupConst() {
-      await peerConnection.close()
+      if(peerConnection != null) {
+         await peerConnection.close()
+      }  
       peerConnection = null
       io_connection.emit('hangupReset')
       

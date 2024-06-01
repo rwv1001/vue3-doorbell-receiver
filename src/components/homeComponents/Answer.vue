@@ -54,7 +54,7 @@
       <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Start Intercom</h1>
       <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Start Intercom</h1>
     </div>
-    <div v-else-if="intercomClientId == dataClientId && intercomPossible" @click="hangUp" class="col d-flex justify-content-center align-items-center  c-vh-20 c-answer bg-danger">
+    <div v-else-if="intercomRecording" @click="hangUp" class="col d-flex justify-content-center align-items-center  c-vh-20 c-answer bg-danger">
       <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Hang Up</h1>
       <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Hang Up</h1>
       <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Hang Up</h1>
@@ -84,7 +84,7 @@
 
 export default {
   name: 'AnswerPage',
-  props: ['doormessages', 'dataClientId', 'intercomClientId', "intercomPossible"],
+  props: ['doormessages', 'intercomRecording', 'dataClientId', 'intercomClientId', "intercomPossible"],
   emits: ['startIntercom', 'answered', 'hangUp'],
   methods: {
     answered() {
