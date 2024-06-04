@@ -284,7 +284,7 @@ a {
     background-color: #ffcccc; /* Light red color for the centered div */
     width: 50%; /* One-fifth of the viewport width */
     height: 50vh; /* One-fifth of the viewport height */
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
 
@@ -303,16 +303,18 @@ a {
     background-color: #ccffcc; /* Light red color for the centered div */
     width: 50%; /* One-fifth of the viewport width */
     height: 50vh; /* One-fifth of the viewport height */
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
+    border: 60px solid black;
+    font-size: 150px;
 
     display: flex;
     justify-content: center; /* Horizontally center the content */
     align-items: center; /* Vertically center the content */
 
     transform: translate(-50%, -50%);
-    border-radius: 10px;
+    border-radius: 60px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
 }
