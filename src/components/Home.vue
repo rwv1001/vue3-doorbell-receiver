@@ -146,8 +146,12 @@ const startIntercomConst = async(offerObj)=>{
     console.log("EmitWithAck newAnswer")
     const offerIceCandidates = await io_connection.emitWithAck('newAnswer',offerObj)
     offerIceCandidates.forEach(c=>{
-        peerConnection.addIceCandidate(c);
-        console.log("======Added Ice Candidate======")
+        if(peerConnection!=null) {
+          peerConnection.addIceCandidate(c);
+          console.log("======Added Ice Candidate======")
+        } else {
+          console.log("peerConnection.addIceCandidate(c) failed since peerConnection==null")
+        }
     })
     console.log(offerIceCandidates)
     console.log("startIntercomConst peerConnection:")
@@ -267,7 +271,7 @@ export default {
           let now = new Date()
           let timeDiff = moment.duration(Date.parse(this.nextBeat)- now)
           heartbeatcount++;
-          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", beat timeDiff: "+ timeDiff + ", heartbeatcount = " + heartbeatcount + ", intercomClientId = " + this.intercomClientId)
+          console.log("current time: "+ useDateFormat(useNow(), "HH:mm:ss").value+ ", timeDiff: "+ timeDiff + ", heartbeat = " + heartbeatcount + ", intercomtId = " + this.intercomClientId + ", dataClientId = " + this.dataClientId)
           if(timeDiff < 0){
             this.con = false 
           } else {
