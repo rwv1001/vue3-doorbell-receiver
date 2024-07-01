@@ -30,45 +30,45 @@
   </div>
   <div class="row">
     <div  v-if="answering" class="col d-flex justify-content-center align-items-center  c-vh-20 bg-warning">
-      <h1 class="align-self-center text-dark m-0 display-6 d-block d-sm-none">Go to door!</h1>
-      <h1 class="align-self-center text-dark m-0 display-5 d-none d-sm-block d-md-none">Go to door!</h1>
-      <h1 class="align-self-center text-dark m-0 display-4 d-none d-md-block d-lg-none">Go to door!</h1>
-      <h1 class="align-self-center text-dark m-0 display-3 d-none d-lg-block d-xl-none">Go to door!</h1>
-      <h1 class="align-self-center text-dark m-0 display-2 d-none d-xl-block d-xxl-none">Go to door!</h1>
-      <h1 class="align-self-center text-dark m-0 display-1 d-none d-xxl-block">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-6 d-block d-sm-none c-prevent-select">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-5 d-none d-sm-block d-md-none c-prevent-select">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-4 d-none d-md-block d-lg-none c-prevent-select">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-3 d-none d-lg-block d-xl-none c-prevent-select">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-2 d-none d-xl-block d-xxl-none c-prevent-select">Go to door!</h1>
+      <h1 class="align-self-center text-dark m-0 display-1 d-none d-xxl-block c-prevent-select">Go to door!</h1>
     </div>
     <div  v-else @click="answered" class="col d-flex justify-content-center align-items-center c-vh-20 c-answer bg-dark">
-      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">I'll Answer</h1>
-      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">I'll Answer</h1>
-      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">I'll Answer</h1>
-      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">I'll Answer</h1>
-      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">I'll Answer</h1>
-      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none c-prevent-select">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none c-prevent-select">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none c-prevent-select">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none c-prevent-select">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none c-prevent-select">I'll Answer</h1>
+      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block c-prevent-select">I'll Answer</h1>
     </div>
     
     <div v-if="intercomClientId == 0 && intercomPossible"  @click="startIntercom" class="col d-flex justify-content-center align-items-center  c-vh-20 c-answer bg-success">
-      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Start Intercom</h1>
-      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Start Intercom</h1>
-      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Start Intercom</h1>
-      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">Start Intercom</h1>
-      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Start Intercom</h1>
-      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none c-prevent-select">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none c-prevent-select">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none c-prevent-select">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none c-prevent-select">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none c-prevent-select">Start Intercom</h1>
+      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block c-prevent-select">Start Intercom</h1>
     </div>
     <div v-else-if="intercomRecording" @click="hangUp" class="col d-flex justify-content-center align-items-center  c-vh-20 c-answer bg-danger">
-      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Hang Up</h1>
-      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Hang Up</h1>
-      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Hang Up</h1>
-      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">Hang Up</h1>
-      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Hang Up</h1>
-      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none c-prevent-select">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none c-prevent-select">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none c-prevent-select">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none c-prevent-select">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none c-prevent-select">Hang Up</h1>
+      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block c-prevent-select">Hang Up</h1>
     </div>
     <div v-else-if="intercomPossible"  class="col d-flex justify-content-center align-items-center  c-vh-20 bg-secondary">
-      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none">Intercom in Use</h1>
-      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none">Intercom in Use</h1>
-      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none">Intercom in Use</h1>
-      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none">Intercom in Use</h1>
-      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none">Intercom in Use</h1>
-      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-6 d-block d-sm-none c-prevent-select">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-5 d-none d-sm-block d-md-none c-prevent-select">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-4 d-none d-md-block d-lg-none c-prevent-select">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-3 d-none d-lg-block d-xl-none c-prevent-select">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-2 d-none d-xl-block d-xxl-none c-prevent-select">Intercom in Use</h1>
+      <h1 class="align-self-center text-light m-0 display-1 d-none d-xxl-block c-prevent-select">Intercom in Use</h1>
     </div>
 
   </div>
@@ -218,6 +218,11 @@ a {
   transform: rotate(270deg);  
 } 
 
+.c-prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
 
 
 </style>

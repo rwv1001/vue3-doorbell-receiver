@@ -6,12 +6,12 @@
           <button @click="toggleUser" class="d-lg-none navbar-toggler ms-auto c-navbar-toggler" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
             aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon c-navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon c-navbar-toggler-icon c-prevent-select"></span>
           </button>
           <button @click="toggleUser" class="d-none d-lg-block navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
             aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon c-prevent-select"></span>
           </button>
 
           <div v-if="!finished" class="collapse.show navbar-collapse" id="navbarSupportedContent">
@@ -119,5 +119,11 @@ export default {
   position: absolute;
   top: 0px;
   right: 0px;
+}
+
+.c-prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 </style>
