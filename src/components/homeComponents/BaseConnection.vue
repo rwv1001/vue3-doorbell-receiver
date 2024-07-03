@@ -1,26 +1,26 @@
 <template>
    <div class="d-none d-lg-block"> 
-      <Icon v-if="connected && answering" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
-      <Icon v-else-if="!connected && answering" icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
-      <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="big-icon c-topleft" />
-      <Icon v-else icon="ph:wifi-slash-bold" class="big-icon c-topleft" />
+      <span v-if="connected && answering"  class="big-icon c-topleft c-connected-big" />
+      <span v-else-if="!connected && answering"  class="big-icon c-topleft c-disconnected-big" />
+      <span v-else-if="connected && !answering"  class="big-icon c-topleft c-connected-big" />
+      <span v-else  class="big-icon c-topleft c-disconnected-big" />
       <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
-       <Icon v-if="soundAlert && answering" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable c-answering" @click="toggleSoundAlertHandler" />
-       <Icon v-else-if="!soundAlert && answering" icon="fluent:speaker-off-20-filled" class="big-icon c-answering" @click="toggleSoundAlertHandler" />
-       <Icon v-else-if="soundAlert && !answering" icon="fluent:speaker-2-20-filled" class="big-icon c-bottomright1 c-clickable" @click="toggleSoundAlertHandler" />
-       <Icon v-else icon="fluent:speaker-off-20-filled" class="big-icon" @click="toggleSoundAlertHandler" />
+       <span v-if="soundAlert && answering"  class="big-icon c-clickable c-answering c-unmuted-big" @click="toggleSoundAlertHandler" />
+       <span v-else-if="!soundAlert && answering" class="big-icon c-answering c-muted-big" @click="toggleSoundAlertHandler" />
+       <span v-else-if="soundAlert && !answering" class="big-icon c-clickable c-unmuted-big" @click="toggleSoundAlertHandler" />
+       <span v-else class="big-icon c-muted-big" @click="toggleSoundAlertHandler" />
        </div>
     </div>
    <div class="d-lg-none">
-      <Icon v-if="connected && answering" icon="ph:wifi-high-bold" class="small-icon c-topleft" />
-      <Icon v-else-if="!connected && answering" icon="ph:wifi-slash-bold" class="small-icon c-topleft" />
-      <Icon v-else-if="connected && !answering" icon="ph:wifi-high-bold" class="small-icon c-topleft" />
-      <Icon v-else icon="ph:wifi-slash-bold" class="small-icon c-topleft" />
+      <span v-if="connected && answering"  class="small-icon c-topleft c-connected-small" />
+      <span v-else-if="!connected && answering"  class="small-icon c-topleft c-disconnected-small" />
+      <span v-else-if="connected && !answering"  class="small-icon c-topleft c-connected-small"  />
+      <span v-else  class="small-icon c-topleft c-disconnected-small" />
       <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
-       <Icon v-if="soundAlert && answering" icon="fluent:speaker-2-20-filled" class="small-icon c-bottomright1 c-clickable c-answering" @click="toggleSoundAlertHandler" />
-       <Icon v-else-if="!soundAlert && answering" icon="fluent:speaker-off-20-filled" class="small-icon c-answering" @click="toggleSoundAlertHandler" />
-       <Icon v-else-if="soundAlert && !answering" icon="fluent:speaker-2-20-filled" class="small-icon c-bottomright1 c-clickable" @click="toggleSoundAlertHandler" />
-       <Icon v-else icon="fluent:speaker-off-20-filled" class="small-icon" @click="toggleSoundAlertHandler" />
+       <span v-if="soundAlert && answering"  class="small-icon c-clickable c-answering c-unmuted-small" @click="toggleSoundAlertHandler" />
+       <span v-else-if="!soundAlert && answering"  class="small-icon c-answering c-muted-small" @click="toggleSoundAlertHandler" />
+       <span v-else-if="soundAlert && !answering"  class="small-icon c-clickable c-unmuted-small" @click="toggleSoundAlertHandler" />
+       <span v-else  class="small-icon c-muted-small" @click="toggleSoundAlertHandler" />
        </div>
     </div>
 
@@ -63,11 +63,112 @@
   left: 0px;
 }
 
+.c-connected-small {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-high-bold-svgrepo-com.svg' );
+}
+.c-connected-big {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-high-bold-svgrepo-com.svg' );
+}
+.c-disconnected-small {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-slash-bold-svgrepo-com.svg' );
+}
+.c-disconnected-big {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-slash-bold-svgrepo-com.svg' );
+}
+.c-unmuted-small {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-2-20-filled.svg' );
+}
+.c-unmuted-big {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-2-20-filled.svg' );
+}
+.c-muted-small {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-off-20-filled.svg' );
+}
+.c-muted-big {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+
+  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-off-20-filled.svg' );
+}
+
+
 .c-bottomright1 {
   position: fixed;
   bottom: 0px;
   right: 0px;
   z-index: 1000;
+  padding: 0;
+  margin: 0;
 }
 
 svg {
