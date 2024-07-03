@@ -71,7 +71,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   margin:0;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-high-bold-svgrepo-com.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/wifi-high-bold-svgrepo-com.svg' );
 }
 .c-connected-big {
   display: inline-block;
@@ -81,7 +81,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   margin:0;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-high-bold-svgrepo-com.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/wifi-high-bold-svgrepo-com.svg' );
 }
 .c-disconnected-small {
   display: inline-block;
@@ -91,7 +91,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   margin:0;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-slash-bold-svgrepo-com.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/wifi-slash-bold-svgrepo-com.svg' );
 }
 .c-disconnected-big {
   display: inline-block;
@@ -101,7 +101,7 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
   margin:0;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/wifi-slash-bold-svgrepo-com.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/wifi-slash-bold-svgrepo-com.svg' );
 }
 .c-unmuted-small {
   display: inline-block;
@@ -115,7 +115,7 @@
   bottom: 0px;
   right: 0px;
   z-index: 1000;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-2-20-filled.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-2-20-filled.svg' );
 }
 .c-unmuted-big {
   display: inline-block;
@@ -129,7 +129,7 @@
   bottom: 0px;
   right: 0px;
   z-index: 1000;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-2-20-filled.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-2-20-filled.svg' );
 }
 .c-muted-small {
   display: inline-block;
@@ -143,7 +143,7 @@
   bottom: 0px;
   right: 0px;
   z-index: 1000;
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-off-20-filled.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-off-20-filled.svg' );
 }
 .c-muted-big {
   display: inline-block;
@@ -158,7 +158,7 @@
   right: 0px;
   z-index: 1000;
 
-  background-image: url( '/home/pi/vue3-doorbell-receiver/src/assets/fluent--speaker-off-20-filled.svg' );
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-off-20-filled.svg' );
 }
 
 
