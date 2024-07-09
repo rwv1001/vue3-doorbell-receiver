@@ -5,8 +5,8 @@
       <span v-else-if="connected && !answering"  class="big-icon c-topleft c-connected-big" />
       <span v-else  class="big-icon c-topleft c-disconnected-big" />
       <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
-       <span v-if="soundAlert && answering"  class="big-icon c-clickable c-answering c-unmuted-big" @click="toggleSoundAlertHandler" />
-       <span v-else-if="!soundAlert && answering" class="big-icon c-answering c-muted-big" @click="toggleSoundAlertHandler" />
+       <span v-if="soundAlert && answering"  class="big-icon c-clickable c-answering c-unmuted-big-invert" @click="toggleSoundAlertHandler" />
+       <span v-else-if="!soundAlert && answering" class="big-icon c-answering c-muted-big-invert" @click="toggleSoundAlertHandler" />
        <span v-else-if="soundAlert && !answering" class="big-icon c-clickable c-unmuted-big" @click="toggleSoundAlertHandler" />
        <span v-else class="big-icon c-muted-big" @click="toggleSoundAlertHandler" />
        </div>
@@ -17,8 +17,8 @@
       <span v-else-if="connected && !answering"  class="small-icon c-topleft c-connected-small"  />
       <span v-else  class="small-icon c-topleft c-disconnected-small" />
       <div v-if="!intercomRecording  && !isSafari()" class="c-bottomright1 c-clickable" >
-       <span v-if="soundAlert && answering"  class="small-icon c-clickable c-answering c-unmuted-small" @click="toggleSoundAlertHandler" />
-       <span v-else-if="!soundAlert && answering"  class="small-icon c-answering c-muted-small" @click="toggleSoundAlertHandler" />
+       <span v-if="soundAlert && answering"  class="small-icon c-clickable c-answering c-unmuted-small-invert" @click="toggleSoundAlertHandler" />
+       <span v-else-if="!soundAlert && answering"  class="small-icon c-answering c-muted-small-invert" @click="toggleSoundAlertHandler" />
        <span v-else-if="soundAlert && !answering"  class="small-icon c-clickable c-unmuted-small" @click="toggleSoundAlertHandler" />
        <span v-else  class="small-icon c-muted-small" @click="toggleSoundAlertHandler" />
        </div>
@@ -157,6 +157,67 @@
   bottom: 0px;
   right: 0px;
   z-index: 1000;
+
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-off-20-filled.svg' );
+}
+.c-unmuted-small-invert {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  filter: invert(1);
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-2-20-filled.svg' );
+}
+.c-unmuted-big-invert {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  filter: invert(1);
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-2-20-filled.svg' );
+}
+.c-muted-small-invert {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  filter: invert(1);
+  background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-off-20-filled.svg' );
+}
+.c-muted-big-invert {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+   /* Add background image */
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  margin:0;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 1000;
+  filter: invert(1);
 
   background-image: url( 'https://assets.cambdoorbell.duckdns.org/assets/fluent--speaker-off-20-filled.svg' );
 }
